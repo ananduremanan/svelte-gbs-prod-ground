@@ -1,15 +1,24 @@
 <script lang="ts">
-	import { AngleLeftOutline, AngleRightOutline } from 'flowbite-svelte-icons';
+	import { AngleLeftOutline, AngleRightOutline, FilterOutline } from 'flowbite-svelte-icons';
+	import FilterPopUp from './FilterPopUp.svelte';
 
 	// Props To Grid Component
 	export let dataSource: Object[];
 	export let columns: Object[];
+
+	columns = columns.map((column) => ({ ...column, showFilterPopup: false }));
 
 	// Grid Variables
 	let currentPage = 0;
 	export let pageNumber = 10;
 	let pageStart = 0;
 	let pageEnd = 10;
+	let enableFilterPopUp: false;
+	let filterValue = '';
+
+	function applyFilter(value) {
+		// showFilterPopup = false;
+	}
 
 	// Total Number Of Pages
 	const totalPages = Math.ceil(dataSource.length / pageNumber);
@@ -48,12 +57,33 @@
 			<table>
 				<thead>
 					<tr>
-						{#each columns as columnHeader}
-							<th class="border p-2">{columnHeader.field}</th>
+						{#each columns as columnHeader, columnIndex}
+							<th class="border p-2">
+								<div class="flex items-center gap-2">
+									{columnHeader.field}
+									<!-- Filter Logic -->
+									{#if columnHeader.filter && !columnHeader.template}
+										<button
+											on:click={() =>
+												(columnHeader.showFilterPopup = !columnHeader.showFilterPopup)}
+											><FilterOutline size="xs" /></button
+										>
+										<FilterPopUp
+											bind:show={columnHeader.showFilterPopup}
+											{applyFilter}
+											on:cancel={(event) => {
+												if (event.type === 'cancel')
+													columnHeader.showFilterPopup = !columnHeader.showFilterPopup;
+											}}
+										/>
+									{/if}
+								</div>
+							</th>
 						{/each}
 					</tr>
 				</thead>
 				<tbody>
+					<!-- Data From Datsource Shows Here -->
 					{#each dataSource.slice(currentPage * pageNumber, (currentPage + 1) * pageNumber) as rowData}
 						<tr>
 							{#each columns as column}
@@ -69,6 +99,7 @@
 					{/each}
 				</tbody>
 			</table>
+			<!-- Pagination Pages -->
 			<div class="flex border p-2 justify-between">
 				<div class="flex gap-4">
 					<button on:click={prevPage}
