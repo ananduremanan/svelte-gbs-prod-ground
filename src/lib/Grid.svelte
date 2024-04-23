@@ -5,25 +5,25 @@
 	// Props To Grid Component
 	export let dataSource: Object[];
 	export let columns: Object[];
+	export let pageNumber = 10;
 
+	// Added an additional column to show filter menu popup for each Column
 	columns = columns.map((column) => ({ ...column, showFilterPopup: false }));
 
-	// Grid Variables
 	let currentPage = 0;
-	export let pageNumber = 10;
 	let pageStart = 0;
 	let pageEnd = 10;
 	let enableFilterPopUp: false;
 	let filterValue = '';
 
-	function applyFilter(value) {
-		// showFilterPopup = false;
+	// Function For Filtering Data Source
+	function handleApplyFilter(event) {
+		console.log(event);
 	}
 
 	// Total Number Of Pages
 	const totalPages = Math.ceil(dataSource.length / pageNumber);
 
-	// Function For Next Page Navigation
 	function nextPage() {
 		if (currentPage < totalPages - 1) {
 			currentPage++;
@@ -34,7 +34,6 @@
 		}
 	}
 
-	// Function For Previous Page Navigation
 	function prevPage() {
 		if (currentPage > 0) {
 			currentPage--;
@@ -45,7 +44,6 @@
 		}
 	}
 
-	// Function For Navigating to a Particular Page
 	function goToPage(page: number): void {
 		currentPage = pageStart + page;
 	}
@@ -68,13 +66,14 @@
 												(columnHeader.showFilterPopup = !columnHeader.showFilterPopup)}
 											><FilterOutline size="xs" /></button
 										>
+										<!-- Filter Pop Up Component For Showing Filtering Options -->
 										<FilterPopUp
 											bind:show={columnHeader.showFilterPopup}
-											{applyFilter}
 											on:cancel={(event) => {
 												if (event.type === 'cancel')
 													columnHeader.showFilterPopup = !columnHeader.showFilterPopup;
 											}}
+											on:apply={handleApplyFilter}
 										/>
 									{/if}
 								</div>
@@ -124,6 +123,7 @@
 					>
 				</div>
 
+				<!-- Shows Total Pages and Items In Grid -->
 				<div class="flex">
 					{currentPage + 1} of {totalPages} pages ({dataSource.length} items)
 				</div>

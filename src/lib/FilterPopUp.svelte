@@ -1,23 +1,44 @@
-<script>
+<script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import { Button, Select } from 'flowbite-svelte';
+
 	const dispatch = createEventDispatcher();
 
 	export let show = false;
-	export let applyFilter = () => {};
-	let filterValue = '';
+
+	let filterValue: string = '';
+	let selected: string = 'contains';
+
+	let filterOptions = [
+		{ value: 'contains', name: 'Contains' },
+		{ value: 'starts_with', name: 'Starts With' },
+		{ value: 'ends_with', name: 'Ends With' }
+	];
 
 	const onCancel = () => {
 		dispatch('cancel');
 	};
+
+	const applyFilter = () => {
+		dispatch('apply', { filterValue, selected });
+	};
 </script>
 
 {#if show}
-	<div class="absolute bg-gray-100 p-2 border z-10 mt-36 flex items-end flex-col shadow-lg">
-		<input type="text" bind:value={filterValue} placeholder="Enter filter value" />
+	<div class="absolute bg-gray-100 p-2 border z-10 mt-40 flex items-end flex-col shadow-lg gap-2">
+		<Select class="mt-2" items={filterOptions} bind:value={selected} />
+		<input
+			type="text"
+			bind:value={filterValue}
+			placeholder="Enter filter value"
+			class="rounded-lg"
+		/>
 		<div class="mt-2">
-			<button on:click={onCancel} class="text-xs bg-red-400 p-1 rounded-lg">Cancel</button>
-			<button on:click={() => applyFilter()} class="text-xs bg-blue-400 p-1 rounded-lg"
-				>Apply Filter</button
+			<Button on:click={onCancel} class="text-xs bg-red-400 p-1 rounded-lg hover:bg-red-600"
+				>Cancel</Button
+			>
+			<Button on:click={applyFilter} class="text-xs bg-blue-400 p-1 rounded-lg hover:bg-blue-600"
+				>Apply Filter</Button
 			>
 		</div>
 	</div>
