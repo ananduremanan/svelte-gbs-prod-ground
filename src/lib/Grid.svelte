@@ -3,8 +3,8 @@
 	import FilterPopUp from './FilterPopUp.svelte';
 
 	// Props To Grid Component
-	export let dataSource: Object[];
-	export let columns: Object[];
+	export let dataSource: any[];
+	export let columns: any[];
 	export let pageNumber = 10;
 
 	// Added an additional column to show filter menu popup for each Column
@@ -13,11 +13,9 @@
 	let currentPage = 0;
 	let pageStart = 0;
 	let pageEnd = 10;
-	let enableFilterPopUp: false;
-	let filterValue = '';
 
 	// Function For Filtering Data Source
-	function handleApplyFilter(event) {
+	function handleApplyFilter(event: any) {
 		console.log(event);
 	}
 
@@ -55,7 +53,7 @@
 			<table>
 				<thead>
 					<tr>
-						{#each columns as columnHeader, columnIndex}
+						{#each columns as columnHeader}
 							<th class="border p-2">
 								<div class="flex items-center gap-2">
 									{columnHeader.field}
