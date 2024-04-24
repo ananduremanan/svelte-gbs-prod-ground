@@ -2,66 +2,48 @@
 	import { AngleLeftOutline, AngleRightOutline, FilterOutline } from 'flowbite-svelte-icons';
 	import FilterPopUp from './FilterPopUp.svelte';
 	import { type PageSettingsProps } from './GridTypes';
+	import { handleApplyFilterHelper, clearFilterHelper } from './FilterHelper';
 
 	// Props To Grid Component
 	export let dataSource: any[];
 	export let columns: any[];
 	export let pageSettings: PageSettingsProps;
 
-	// $: dataSource;
-	// $: columns;
-
-	let fullDataSource = [...dataSource];
-
-	// Added an additional column to show filter menu popup for each Column
-	columns = columns.map((column) => ({ ...column, showFilterPopup: false, isFilterActive: false }));
-
 	let currentPage = 0;
 	let pageStart = 0;
 	let pageEnd = 10;
+	let fullDataSource = [...dataSource];
 
 	// Total Number Of Pages
 	const totalPages = Math.ceil(dataSource.length / pageSettings.pageNumber);
 
-	// Function For Filtering Data Source
+	// Added an additional column to show filter menu popup for each Column
+	columns = columns.map((column) => ({ ...column, showFilterPopup: false, isFilterActive: false }));
+
+	// Filtering Helper Methods
 	function handleApplyFilter(event: any) {
-		console.log(event);
-		let filterValue = event.detail.filterValue.toLowerCase();
-		let filterCondition = event.detail.selected;
-		let filterColumn = event.detail.columnHeader;
-
-		columns = columns.map((column: any) => {
-			if (column.field === filterColumn) {
-				return { ...column, isFilterActive: true, showFilterPopup: false };
-			}
-			return column;
-		});
-
-		dataSource = fullDataSource.filter((item: any) => {
-			let columnValue = item[filterColumn].toString().toLowerCase();
-
-			switch (filterCondition) {
-				case 'contains':
-					return columnValue.includes(filterValue);
-				case 'equals':
-					return columnValue === filterValue;
-				default:
-					return true;
-			}
-		});
+		const { columns: updatedColumns, dataSource: updatedDataSource } = handleApplyFilterHelper(
+			event,
+			columns,
+			dataSource,
+			fullDataSource
+		);
+		columns = updatedColumns;
+		dataSource = updatedDataSource;
 	}
 
-	// Function For Clearing the Filter
 	function clearFilter(event: any) {
-		let filterColumn = event.detail.columnHeader;
-		columns = columns.map((column: any) => {
-			if (column.field === filterColumn) {
-				return { ...column, isFilterActive: true, showFilterPopup: false };
-			}
-			return column;
-		});
+		const { columns: updatedColumns, dataSource: updatedDataSource } = clearFilterHelper(
+			event,
+			columns,
+			dataSource,
+			fullDataSource
+		);
+		columns = updatedColumns;
+		dataSource = updatedDataSource;
 	}
 
+	// Page Navigation Helper Methods
 	function nextPage() {
 		if (currentPage < totalPages - 1) {
 			currentPage++;

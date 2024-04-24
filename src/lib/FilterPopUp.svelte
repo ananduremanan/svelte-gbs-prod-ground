@@ -30,6 +30,7 @@
 	};
 
 	const clearFilter = () => {
+		isFilterActive = false;
 		dispatch('clearFilter', { columnHeader });
 	};
 </script>
