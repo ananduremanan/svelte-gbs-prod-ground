@@ -15,4 +15,4 @@
 	];
 </script>
 
-<Grid {columns} {dataSource} pageNumber={10} />
+<Grid {columns} {dataSource} pageSettings={{ pageNumber: 10 }} />

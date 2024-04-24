@@ -5,6 +5,7 @@
 	const dispatch = createEventDispatcher();
 
 	export let show = false;
+	export let columnHeader = '';
 
 	let filterValue: string = '';
 	let selected: string = 'contains';
@@ -20,7 +21,7 @@
 	};
 
 	const applyFilter = () => {
-		dispatch('apply', { filterValue, selected });
+		dispatch('apply', { filterValue, selected, columnHeader });
 	};
 </script>
 

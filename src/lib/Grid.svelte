@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { AngleLeftOutline, AngleRightOutline, FilterOutline } from 'flowbite-svelte-icons';
 	import FilterPopUp from './FilterPopUp.svelte';
+	import { type PageSettingsProps } from './GridTypes';
 
 	// Props To Grid Component
 	export let dataSource: any[];
 	export let columns: any[];
-	export let pageNumber = 10;
+	export let pageSettings: PageSettingsProps;
+
+	$: dataSource;
 
 	// Added an additional column to show filter menu popup for each Column
 	columns = columns.map((column) => ({ ...column, showFilterPopup: false }));
@@ -16,11 +19,26 @@
 
 	// Function For Filtering Data Source
 	function handleApplyFilter(event: any) {
-		console.log(event);
+		let filterValue = event.detail.filterValue.toLowerCase();
+		let filterCondition = event.detail.selected;
+		let filterColumn = event.detail.columnHeader;
+
+		dataSource = dataSource.filter((item: any) => {
+			let columnValue = item[filterColumn].toString().toLowerCase();
+
+			switch (filterCondition) {
+				case 'contains':
+					return columnValue.includes(filterValue);
+				case 'equals':
+					return columnValue === filterValue;
+				default:
+					return true;
+			}
+		});
 	}
 
 	// Total Number Of Pages
-	const totalPages = Math.ceil(dataSource.length / pageNumber);
+	const totalPages = Math.ceil(dataSource.length / pageSettings.pageNumber);
 
 	function nextPage() {
 		if (currentPage < totalPages - 1) {
@@ -72,6 +90,7 @@
 													columnHeader.showFilterPopup = !columnHeader.showFilterPopup;
 											}}
 											on:apply={handleApplyFilter}
+											bind:columnHeader={columnHeader.field}
 										/>
 									{/if}
 								</div>
@@ -81,7 +100,7 @@
 				</thead>
 				<tbody>
 					<!-- Data From Datsource Shows Here -->
-					{#each dataSource.slice(currentPage * pageNumber, (currentPage + 1) * pageNumber) as rowData}
+					{#each dataSource.slice(currentPage * pageSettings.pageNumber, (currentPage + 1) * pageSettings.pageNumber) as rowData}
 						<tr>
 							{#each columns as column}
 								{#if column.template}
@@ -103,14 +122,14 @@
 						><AngleLeftOutline class={`${currentPage === 0 ? 'text-gray-200' : ''}`} /></button
 					>
 					<div class="flex flex-row gap-3 items-center">
-						{#each Array(Math.min(10, Math.ceil(dataSource.length / pageNumber) - pageStart)) as _, i}
+						{#each Array(Math.min(10, Math.ceil(dataSource.length / pageSettings.pageNumber) - pageStart)) as _, i}
 							<button
 								on:click={() => goToPage(i)}
 								class={`${pageStart + i === currentPage ? 'font-bold text-white p-1 w-6 h-6 bg-blue-500 flex items-center justify-center rounded-full' : ''}`}
 								>{pageStart + i + 1}</button
 							>
 						{/each}
-						{#if pageEnd < Math.ceil(dataSource.length / pageNumber)}
+						{#if pageEnd < Math.ceil(dataSource.length / pageSettings.pageNumber)}
 							<button class="p-1 w-5 h-5 flex items-center justify-center rounded-full">...</button>
 						{/if}
 					</div>
