@@ -10,7 +10,7 @@
 	export let columns: any[];
 	export let pageSettings: PageSettingsProps;
 	export let enableSearch = false;
-	export let gridHeight: number = 100;
+	export let gridHeight: number = 72;
 	export let lazy: boolean = false;
 
 	let currentPage = 0;
