@@ -8,22 +8,36 @@
 	export let columns: any[];
 	export let pageSettings: PageSettingsProps;
 
-	$: dataSource;
+	// $: dataSource;
+	// $: columns;
+
+	let fullDataSource = [...dataSource];
 
 	// Added an additional column to show filter menu popup for each Column
-	columns = columns.map((column) => ({ ...column, showFilterPopup: false }));
+	columns = columns.map((column) => ({ ...column, showFilterPopup: false, isFilterActive: false }));
 
 	let currentPage = 0;
 	let pageStart = 0;
 	let pageEnd = 10;
 
+	// Total Number Of Pages
+	const totalPages = Math.ceil(dataSource.length / pageSettings.pageNumber);
+
 	// Function For Filtering Data Source
 	function handleApplyFilter(event: any) {
+		console.log(event);
 		let filterValue = event.detail.filterValue.toLowerCase();
 		let filterCondition = event.detail.selected;
 		let filterColumn = event.detail.columnHeader;
 
-		dataSource = dataSource.filter((item: any) => {
+		columns = columns.map((column: any) => {
+			if (column.field === filterColumn) {
+				return { ...column, isFilterActive: true, showFilterPopup: false };
+			}
+			return column;
+		});
+
+		dataSource = fullDataSource.filter((item: any) => {
 			let columnValue = item[filterColumn].toString().toLowerCase();
 
 			switch (filterCondition) {
@@ -37,8 +51,16 @@
 		});
 	}
 
-	// Total Number Of Pages
-	const totalPages = Math.ceil(dataSource.length / pageSettings.pageNumber);
+	// Function For Clearing the Filter
+	function clearFilter(event: any) {
+		let filterColumn = event.detail.columnHeader;
+		columns = columns.map((column: any) => {
+			if (column.field === filterColumn) {
+				return { ...column, isFilterActive: true, showFilterPopup: false };
+			}
+			return column;
+		});
+	}
 
 	function nextPage() {
 		if (currentPage < totalPages - 1) {
@@ -80,17 +102,22 @@
 										<button
 											on:click={() =>
 												(columnHeader.showFilterPopup = !columnHeader.showFilterPopup)}
-											><FilterOutline size="xs" /></button
+											><FilterOutline
+												size="xs"
+												class={`${columnHeader.isFilterActive ? 'text-red-400' : ''}`}
+											/></button
 										>
 										<!-- Filter Pop Up Component For Showing Filtering Options -->
 										<FilterPopUp
 											bind:show={columnHeader.showFilterPopup}
 											on:cancel={(event) => {
-												if (event.type === 'cancel')
+												if (event.type === 'cancel') {
 													columnHeader.showFilterPopup = !columnHeader.showFilterPopup;
+												}
 											}}
 											on:apply={handleApplyFilter}
 											bind:columnHeader={columnHeader.field}
+											on:clearFilter={clearFilter}
 										/>
 									{/if}
 								</div>
@@ -100,19 +127,25 @@
 				</thead>
 				<tbody>
 					<!-- Data From Datsource Shows Here -->
-					{#each dataSource.slice(currentPage * pageSettings.pageNumber, (currentPage + 1) * pageSettings.pageNumber) as rowData}
+					{#if dataSource.length > 0}
+						{#each dataSource.slice(currentPage * pageSettings.pageNumber, (currentPage + 1) * pageSettings.pageNumber) as rowData}
+							<tr>
+								{#each columns as column}
+									{#if column.template}
+										<td class="border p-2 flex justify-center"
+											><svelte:component this={column.template} {rowData} /></td
+										>
+									{:else}
+										<td class="border p-2">{rowData[column.field]}</td>
+									{/if}
+								{/each}
+							</tr>
+						{/each}
+					{:else}
 						<tr>
-							{#each columns as column}
-								{#if column.template}
-									<td class="border p-2 flex justify-center"
-										><svelte:component this={column.template} {rowData} /></td
-									>
-								{:else}
-									<td class="border p-2">{rowData[column.field]}</td>
-								{/if}
-							{/each}
+							<td colspan={columns.length} class="border p-2 text-center">No Data Found</td>
 						</tr>
-					{/each}
+					{/if}
 				</tbody>
 			</table>
 			<!-- Pagination Pages -->

@@ -7,8 +7,11 @@
 	export let show = false;
 	export let columnHeader = '';
 
+	$: show;
+
 	let filterValue: string = '';
 	let selected: string = 'contains';
+	let isFilterActive = false;
 
 	let filterOptions = [
 		{ value: 'contains', name: 'Contains' },
@@ -22,6 +25,12 @@
 
 	const applyFilter = () => {
 		dispatch('apply', { filterValue, selected, columnHeader });
+		show = false;
+		isFilterActive = true;
+	};
+
+	const clearFilter = () => {
+		dispatch('clearFilter', { columnHeader });
 	};
 </script>
 
@@ -38,6 +47,11 @@
 			<Button on:click={onCancel} class="text-xs bg-red-400 p-1 rounded-lg hover:bg-red-600"
 				>Cancel</Button
 			>
+			{#if isFilterActive}
+				<Button on:click={clearFilter} class="text-xs bg-blue-400 p-1 rounded-lg hover:bg-blue-600"
+					>Clear Filter</Button
+				>
+			{/if}
 			<Button on:click={applyFilter} class="text-xs bg-blue-400 p-1 rounded-lg hover:bg-blue-600"
 				>Apply Filter</Button
 			>
