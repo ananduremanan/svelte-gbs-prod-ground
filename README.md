@@ -9,3 +9,7 @@ Gbs svelte component library for internal distribution
     npm install
     npm run dev
 ```
+
+## Testing With Playwright
+
+This Project Uses Playwright to run test cases. Please install playwright with `npx playwright install` before runnig test command.
