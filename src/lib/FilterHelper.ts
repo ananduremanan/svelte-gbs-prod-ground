@@ -10,6 +10,7 @@ export function handleApplyFilterHelper(
 	let filterCondition = event.detail.selected;
 	let filterColumn = event.detail.columnHeader;
 
+	// Add the new filter to activeFilterArray
 	activeFilterArray.push({
 		filterValue: filterValue,
 		filterCondition: filterCondition,
@@ -23,17 +24,20 @@ export function handleApplyFilterHelper(
 		return column;
 	});
 
-	dataSource = fullDataSource.filter((item: any) => {
-		let columnValue = item[filterColumn].toString().toLowerCase();
-
-		switch (filterCondition) {
-			case 'contains':
-				return columnValue.includes(filterValue);
-			case 'equals':
-				return columnValue === filterValue;
-			default:
-				return true;
-		}
+	// Apply all active filters
+	dataSource = fullDataSource;
+	activeFilterArray.forEach((filter: any) => {
+		dataSource = dataSource.filter((item: any) => {
+			let columnValue = item[filter.filterColumn].toString().toLowerCase();
+			switch (filter.filterCondition) {
+				case 'contains':
+					return columnValue.includes(filter.filterValue);
+				case 'equals':
+					return columnValue === filter.filterValue;
+				default:
+					return true;
+			}
+		});
 	});
 
 	return { columns, dataSource };
