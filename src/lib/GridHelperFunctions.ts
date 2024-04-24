@@ -1,3 +1,5 @@
+import * as XLSX from 'xlsx';
+
 let activeFilterArray: Object[] = [];
 
 export function handleApplyFilterHelper(
@@ -81,4 +83,18 @@ export function clearFilterHelper(
 	});
 
 	return { columns, dataSource };
+}
+
+export function exportToExcelHelper(dataSource: any[], columns: any[]) {
+	const dataToExport = dataSource.map((row) => {
+		const rowData: any = {};
+		columns.forEach((column: any) => {
+			rowData[column.field] = row[column.field];
+		});
+		return rowData;
+	});
+	const ws = XLSX.utils.json_to_sheet(dataToExport);
+	const wb = XLSX.utils.book_new();
+	XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+	XLSX.writeFile(wb, 'data.xlsx');
 }

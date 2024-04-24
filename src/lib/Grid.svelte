@@ -2,9 +2,12 @@
 	import { AngleLeftOutline, AngleRightOutline, FilterOutline } from 'flowbite-svelte-icons';
 	import FilterPopUp from './FilterPopUp.svelte';
 	import { type PageSettingsProps } from './GridTypes';
-	import { handleApplyFilterHelper, clearFilterHelper } from './GridHelperFunctions';
+	import {
+		handleApplyFilterHelper,
+		clearFilterHelper,
+		exportToExcelHelper
+	} from './GridHelperFunctions';
 	import { Search, Button } from 'flowbite-svelte';
-	import * as XLSX from 'xlsx';
 
 	// Props To Grid Component
 	export let dataSource: any[];
@@ -25,21 +28,6 @@
 
 	// Added an additional column to show filter menu popup for each Column
 	columns = columns.map((column) => ({ ...column, showFilterPopup: false, isFilterActive: false }));
-
-	// Function to export table data to Excel
-	function exportToExcel() {
-		const dataToExport = dataSource.map((row) => {
-			const rowData: any = {};
-			columns.forEach((column) => {
-				rowData[column.field] = row[column.field];
-			});
-			return rowData;
-		});
-		const ws = XLSX.utils.json_to_sheet(dataToExport);
-		const wb = XLSX.utils.book_new();
-		XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-		XLSX.writeFile(wb, 'data.xlsx');
-	}
 
 	// Function For Seraching the Grid
 	function handleSearch(event: any) {
@@ -109,7 +97,9 @@
 		{#if columns}
 			<div class="flex justify-end border p-1 gap-2">
 				{#if enableExcelExport}
-					<Button on:click={exportToExcel} class="p-1">Export as Excel</Button>
+					<Button on:click={() => exportToExcelHelper(dataSource, columns)} class="p-1"
+						>Export as Excel</Button
+					>
 				{/if}
 				{#if enableSearch}
 					<div>
