@@ -15,4 +15,4 @@
 	];
 </script>
 
-<Grid {columns} {dataSource} pageSettings={{ pageNumber: 10 }} enableSearch />
+<Grid {columns} {dataSource} pageSettings={{ pageNumber: 10 }} enableSearch enableExcelExport />
