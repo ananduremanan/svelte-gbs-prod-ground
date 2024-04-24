@@ -2,12 +2,16 @@
 	import { AngleLeftOutline, AngleRightOutline, FilterOutline } from 'flowbite-svelte-icons';
 	import FilterPopUp from './FilterPopUp.svelte';
 	import { type PageSettingsProps } from './GridTypes';
-	import { handleApplyFilterHelper, clearFilterHelper } from './FilterHelper';
+	import { handleApplyFilterHelper, clearFilterHelper } from './GridHelperFunctions';
+	import { Search } from 'flowbite-svelte';
 
 	// Props To Grid Component
 	export let dataSource: any[];
 	export let columns: any[];
 	export let pageSettings: PageSettingsProps;
+	export let enableSearch = false;
+	export let gridHeight: number = 100;
+	export let lazy: boolean = false;
 
 	let currentPage = 0;
 	let pageStart = 0;
@@ -19,6 +23,19 @@
 
 	// Added an additional column to show filter menu popup for each Column
 	columns = columns.map((column) => ({ ...column, showFilterPopup: false, isFilterActive: false }));
+
+	function handleSearch(event: any) {
+		if (!lazy) {
+			dataSource = fullDataSource.filter((item: any) => {
+				for (const key in item) {
+					if (item[key].toString().toLowerCase().includes(event.target.value.toLowerCase())) {
+						return true;
+					}
+				}
+				return false;
+			});
+		}
+	}
 
 	// Filtering Helper Methods
 	function handleApplyFilter(event: any) {
@@ -72,8 +89,15 @@
 <div class="flex flex-col">
 	{#if dataSource}
 		{#if columns}
-			<table>
-				<thead>
+			<div class="flex justify-end border p-1">
+				{#if enableSearch}
+					<div>
+						<Search size="sm" on:input={handleSearch}></Search>
+					</div>
+				{/if}
+			</div>
+			<table class={`h-${gridHeight} block overflow-y-auto`}>
+				<thead class="sticky top-0 bg-white">
 					<tr>
 						{#each columns as columnHeader}
 							<th class="border p-2">
