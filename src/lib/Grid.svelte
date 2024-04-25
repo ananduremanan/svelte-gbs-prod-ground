@@ -14,7 +14,7 @@
 	export let columns: any[];
 	export let pageSettings: PageSettingsProps;
 	export let enableSearch = false;
-	export let gridHeight: number = 72;
+	// export let gridHeight: number = 72;
 	export let lazy: boolean = false;
 	export let enableExcelExport: boolean = false;
 
@@ -96,25 +96,31 @@
 <div class="flex flex-col">
 	{#if dataSource}
 		{#if columns}
-			<div class="flex justify-end border p-1 gap-2">
-				{#if enableExcelExport}
-					<Button on:click={() => exportToExcelHelper(dataSource, columns)} class="p-1"
-						>Export as Excel</Button
-					>
-				{/if}
-				{#if enableSearch}
-					<div>
-						<Search size="sm" on:input={handleSearch}></Search>
-					</div>
-				{/if}
-			</div>
-			<table class={`h-${gridHeight} block overflow-y-auto`}>
-				<thead class="sticky top-0 bg-white">
+			{#if enableSearch || enableExcelExport}
+				<div class="flex justify-end border p-1 gap-2">
+					{#if enableExcelExport}
+						<Button on:click={() => exportToExcelHelper(dataSource, columns)} class="p-1"
+							>Export as Excel</Button
+						>
+					{/if}
+					{#if enableSearch}
+						<div>
+							<Search size="sm" on:input={handleSearch}></Search>
+						</div>
+					{/if}
+				</div>
+			{/if}
+			<table>
+				<thead>
 					<tr>
 						{#each columns as columnHeader}
 							<th class="border p-2">
 								<div class="flex items-center gap-2">
-									{columnHeader.field}
+									{#if columnHeader.headerText}
+										{columnHeader.headerText}
+									{:else}
+										{columnHeader.field}
+									{/if}
 									<!-- Filter Logic -->
 									{#if columnHeader.filter && !columnHeader.template}
 										<button
@@ -173,6 +179,16 @@
 						><AngleLeftOutline class={`${currentPage === 0 ? 'text-gray-200' : ''}`} /></button
 					>
 					<div class="flex flex-row gap-3 items-center">
+						{#if pageStart > 0}
+							<button
+								class="p-1 w-5 h-5 flex items-center justify-center rounded-full"
+								on:click={() => {
+									pageStart -= 10;
+									pageEnd -= 10;
+									currentPage = pageStart;
+								}}>...</button
+							>
+						{/if}
 						{#each Array(Math.min(10, Math.ceil(dataSource.length / pageSettings.pageNumber) - pageStart)) as _, i}
 							<button
 								on:click={() => goToPage(i)}
@@ -181,7 +197,14 @@
 							>
 						{/each}
 						{#if pageEnd < Math.ceil(dataSource.length / pageSettings.pageNumber)}
-							<button class="p-1 w-5 h-5 flex items-center justify-center rounded-full">...</button>
+							<button
+								class="p-1 w-5 h-5 flex items-center justify-center rounded-full"
+								on:click={() => {
+									pageStart += 10;
+									pageEnd += 10;
+									currentPage = pageStart;
+								}}>...</button
+							>
 						{/if}
 					</div>
 					<button on:click={nextPage}
