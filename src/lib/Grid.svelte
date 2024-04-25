@@ -53,6 +53,7 @@
 		);
 		columns = updatedColumns;
 		dataSource = updatedDataSource;
+		goToPage(0);
 	}
 
 	function clearFilter(event: any) {
