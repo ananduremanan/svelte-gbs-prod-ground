@@ -8,6 +8,7 @@
 		exportToExcelHelper
 	} from './GridHelperFunctions';
 	import { Search, Button } from 'flowbite-svelte';
+	import { goto } from '$app/navigation';
 
 	// Props To Grid Component
 	export let dataSource: any[];
@@ -40,6 +41,7 @@
 				}
 				return false;
 			});
+			goToPage(0);
 		}
 	}
 

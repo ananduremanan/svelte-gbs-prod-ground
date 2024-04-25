@@ -42,9 +42,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@grampro/svelte-block": "^0.0.5-1-beta",
-		"i": "^0.3.7",
-		"npm": "^10.5.2",
+		"@grampro/svelte-block": "^0.0.5-2-beta",
 		"xlsx": "^0.18.5"
 	}
 }
