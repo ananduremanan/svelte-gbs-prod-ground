@@ -1,13 +1,16 @@
 <script lang="ts">
 	import { AngleLeftOutline, AngleRightOutline, FilterOutline } from 'flowbite-svelte-icons';
 	import FilterPopUp from './FilterPopUp.svelte';
-	import { type PageSettingsProps } from './GridTypes';
 	import {
 		handleApplyFilterHelper,
 		clearFilterHelper,
 		exportToExcelHelper
 	} from './GridHelperFunctions';
 	import { Search, Button } from 'flowbite-svelte';
+
+	interface PageSettingsProps {
+		pageNumber: number;
+	}
 
 	// Props To Grid Component
 	export let dataSource: any[];
