@@ -60,6 +60,7 @@
 	>
 		<CaretDownSolid color="gray" />
 	</button>
+	<!-- options dropdown list -->
 	{#if showOptions}
 		<div
 			class={twMerge(
@@ -67,21 +68,25 @@
 				dropStyle
 			)}
 		>
-			{#each items as { value: itemValue, name, imgSrc }}
-				<button
-					class="px-4 py-2 w-full text-left hover:bg-orange-400 flex gap-2"
-					on:click={() => {
-						displayValue = name;
-						value = itemValue;
-						showOptions = false;
-					}}
-				>
-					{#if imgSrc}
-						<img src={imgSrc} alt={`imgSrc`} class="w-5 h-5 rounded-full object-cover" />
-					{/if}
-					{name}</button
-				>
-			{/each}
+			{#if items.length > 0}
+				{#each items as { value: itemValue, name, imgSrc }}
+					<button
+						class="px-4 py-2 w-full text-left hover:bg-orange-400 flex gap-2"
+						on:click={() => {
+							displayValue = name;
+							value = itemValue;
+							showOptions = false;
+						}}
+					>
+						{#if imgSrc}
+							<img src={imgSrc} alt={`imgSrc`} class="w-5 h-5 rounded-full object-cover" />
+						{/if}
+						{name}</button
+					>
+				{/each}
+			{:else}
+				<div class="text-sm text-center">No DataSource Found</div>
+			{/if}
 		</div>
 	{/if}
 </div>
