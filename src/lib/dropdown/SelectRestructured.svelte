@@ -62,7 +62,7 @@
 	<!-- Item List Popover -->
 	{#if showPopover}
 		<div
-			class="absolute w-[200px] h-[200px] border px-2 rounded-lg mt-[1px] overflow-y-auto scrollbar"
+			class="absolute w-[200px] h-[200px] border px-2 rounded-lg mt-[1px] overflow-y-auto scrollbar bg-white"
 			bind:this={popoverTrigger}
 		>
 			<!-- Search Handler -->

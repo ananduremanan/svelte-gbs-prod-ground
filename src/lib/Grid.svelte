@@ -56,6 +56,8 @@
 				}
 				return false;
 			});
+			console.log(dataSource);
+
 			goToPage(0);
 		}
 	}
@@ -123,7 +125,8 @@
 					{/if}
 					{#if enableSearch}
 						<div class="flex gap-1">
-							<Search size="sm" bind:value={searchParam} on:input={resetSearch}></Search>
+							<Search size="sm" bind:value={searchParam} on:input={resetSearch} class="outline-none"
+							></Search>
 							<button
 								class="bg-orange-500 rounded-lg text-white w-10 flex items-center justify-center"
 								on:click={() => {
@@ -136,7 +139,7 @@
 			{/if}
 
 			<!-- Data Table -->
-			<table>
+			<table class="table-auto">
 				<thead>
 					<tr>
 						{#each columns as columnHeader}
@@ -186,66 +189,72 @@
 											><svelte:component this={column.template} {rowData} /></td
 										>
 									{:else}
-										<td class="border p-2">{rowData[column.field]}</td>
+										<td class="border p-2 text-sm">{rowData[column.field]}</td>
 									{/if}
 								{/each}
 							</tr>
 						{/each}
+						<!-- Pagination Logic -->
+						<tr>
+							<td colspan={columns.length} class="border">
+								<div class="flex p-2 justify-between">
+									<div class="flex gap-4">
+										<button on:click={prevPage}
+											><AngleLeftOutline
+												class={`${currentPage === 0 ? 'text-gray-200' : ''}`}
+											/></button
+										>
+										<div class="flex flex-row gap-3 items-center">
+											{#if pageStart > 0}
+												<button
+													class="p-1 w-5 h-5 flex items-center justify-center rounded-full"
+													on:click={() => {
+														pageStart -= 10;
+														pageEnd -= 10;
+														currentPage = pageStart;
+													}}>...</button
+												>
+											{/if}
+											{#each Array(Math.min(10, Math.ceil(dataSource.length / pageSettings.pageNumber) - pageStart)) as _, i}
+												<button
+													on:click={() => goToPage(i)}
+													class={`${pageStart + i === currentPage ? 'font-bold text-white p-1 w-6 h-6 bg-blue-500 flex items-center justify-center rounded-full' : ''}`}
+													>{pageStart + i + 1}</button
+												>
+											{/each}
+											{#if pageEnd < Math.ceil(dataSource.length / pageSettings.pageNumber)}
+												<button
+													class="p-1 w-5 h-5 flex items-center justify-center rounded-full"
+													on:click={() => {
+														pageStart += 10;
+														pageEnd += 10;
+														currentPage = pageStart;
+													}}>...</button
+												>
+											{/if}
+										</div>
+										<button on:click={nextPage}
+											><AngleRightOutline
+												class={`${currentPage === totalPages - 1 ? 'text-gray-200' : ''}`}
+											/></button
+										>
+									</div>
+
+									<!-- Shows Total Pages and Items In Grid -->
+									<div class="flex">
+										{currentPage + 1} of {totalPages} pages ({dataSource.length} items)
+									</div>
+								</div>
+							</td>
+						</tr>
 					{:else}
+						<!-- Shows if Datasource array is empty -->
 						<tr>
 							<td colspan={columns.length} class="border p-2 text-center">No Data Found</td>
 						</tr>
 					{/if}
 				</tbody>
 			</table>
-
-			<!-- Pagination Pages -->
-			<div class="flex border p-2 justify-between">
-				<div class="flex gap-4">
-					<button on:click={prevPage}
-						><AngleLeftOutline class={`${currentPage === 0 ? 'text-gray-200' : ''}`} /></button
-					>
-					<div class="flex flex-row gap-3 items-center">
-						{#if pageStart > 0}
-							<button
-								class="p-1 w-5 h-5 flex items-center justify-center rounded-full"
-								on:click={() => {
-									pageStart -= 10;
-									pageEnd -= 10;
-									currentPage = pageStart;
-								}}>...</button
-							>
-						{/if}
-						{#each Array(Math.min(10, Math.ceil(dataSource.length / pageSettings.pageNumber) - pageStart)) as _, i}
-							<button
-								on:click={() => goToPage(i)}
-								class={`${pageStart + i === currentPage ? 'font-bold text-white p-1 w-6 h-6 bg-blue-500 flex items-center justify-center rounded-full' : ''}`}
-								>{pageStart + i + 1}</button
-							>
-						{/each}
-						{#if pageEnd < Math.ceil(dataSource.length / pageSettings.pageNumber)}
-							<button
-								class="p-1 w-5 h-5 flex items-center justify-center rounded-full"
-								on:click={() => {
-									pageStart += 10;
-									pageEnd += 10;
-									currentPage = pageStart;
-								}}>...</button
-							>
-						{/if}
-					</div>
-					<button on:click={nextPage}
-						><AngleRightOutline
-							class={`${currentPage === totalPages - 1 ? 'text-gray-200' : ''}`}
-						/></button
-					>
-				</div>
-
-				<!-- Shows Total Pages and Items In Grid -->
-				<div class="flex">
-					{currentPage + 1} of {totalPages} pages ({dataSource.length} items)
-				</div>
-			</div>
 		{/if}
 	{/if}
 </div>
