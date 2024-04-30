@@ -2,6 +2,8 @@
 	import { tick } from 'svelte';
 	import ChevronsUpDown from 'lucide-svelte/icons/chevrons-up-down';
 	import { SearchOutline } from 'flowbite-svelte-icons';
+	import Check from 'lucide-svelte/icons/check';
+	import { cn } from '$lib/utils.js';
 
 	export let placeholder = 'Select a Value...';
 	export let items: any[];
@@ -38,6 +40,7 @@
 	// Function to toggle popover
 	async function togglePopover() {
 		showPopover = !showPopover;
+		items = fullDataSource;
 		if (showPopover) {
 			await tick();
 			searchRef.focus();
@@ -80,13 +83,14 @@
 			{#if items.length > 0}
 				{#each items as { value, label }}
 					<button
-						class="px-2 py-1 w-full text-left hover:bg-blue-100 flex gap-2 rounded-lg mt-1 text-sm"
+						class="px-2 py-1 w-full text-left hover:bg-blue-100 gap-2 rounded-lg mt-1 text-sm flex items-center"
 						on:click={() => {
 							selected = value;
 							selectedDisplay = label;
 							showPopover = !showPopover;
 						}}
 					>
+						<Check class={cn('mr-2 h-4 w-4', selected !== value && 'text-transparent')} />
 						{label}</button
 					>
 				{/each}

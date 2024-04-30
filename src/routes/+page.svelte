@@ -24,6 +24,6 @@
 <div class="flex flex-col gap-4 px-20 py-8">
 	<!-- <Select items={countries} bind:value={selected} placeholder={'Select a Country'} /> -->
 	<!-- <Grid {columns} {dataSource} pageSettings={{ pageNumber: 10 }} /> -->
-	<SelectShad items={countries} />
+	<!-- <SelectShad items={countries} /> -->
 	<SelectRestructured items={countries} />
 </div>
