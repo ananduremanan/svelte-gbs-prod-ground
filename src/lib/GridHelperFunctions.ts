@@ -85,7 +85,7 @@ export function clearFilterHelper(
 	return { columns, dataSource };
 }
 
-export function exportToExcelHelper(dataSource: any[], columns: any[]) {
+export function exportToExcelHelper(dataSource: any[], columns: any[], excelName: string) {
 	const dataToExport = dataSource.map((row) => {
 		const rowData: any = {};
 		columns.forEach((column: any) => {
@@ -96,5 +96,5 @@ export function exportToExcelHelper(dataSource: any[], columns: any[]) {
 	const ws = XLSX.utils.json_to_sheet(dataToExport);
 	const wb = XLSX.utils.book_new();
 	XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-	XLSX.writeFile(wb, 'data.xlsx');
+	XLSX.writeFile(wb, `${excelName}.xlsx`);
 }

@@ -24,6 +24,7 @@
 	export let enableSearch = false;
 	export let lazy: boolean = false;
 	export let enableExcelExport: boolean = false;
+	export let excelName: string = 'data';
 
 	let currentPage = 0;
 	let pageStart = 0;
@@ -122,10 +123,12 @@
 					<tr>
 						<th class="border p-1" colspan={columns.length}>
 							{#if enableSearch || enableExcelExport}
-								<div class="flex justify-end">
+								<div class="flex justify-end gap-2">
 									{#if enableExcelExport}
-										<Button on:click={() => exportToExcelHelper(dataSource, columns)} class="p-1"
-											>Export as Excel</Button
+										<button
+											on:click={() => exportToExcelHelper(dataSource, columns, excelName)}
+											class="p-1 bg-orange-400 rounded-lg text-xs text-white"
+											>Export as Excel</button
 										>
 									{/if}
 									{#if enableSearch}
@@ -191,13 +194,13 @@
 						{#each dataSource.slice(currentPage * pageSettings.pageNumber, (currentPage + 1) * pageSettings.pageNumber) as rowData}
 							<tr>
 								{#each columns as column}
-									{#if column.template}
-										<td class="border p-2 flex justify-center"
-											><svelte:component this={column.template} {rowData} /></td
-										>
-									{:else}
-										<td class="border p-2 text-sm">{rowData[column.field]}</td>
-									{/if}
+									<td class={`border p-2 text-sm ${column.template ? 'flex justify-center' : ''}`}>
+										{#if column.template}
+											<svelte:component this={column.template} {rowData} />
+										{:else}
+											{rowData[column.field]}
+										{/if}
+									</td>
 								{/each}
 							</tr>
 						{/each}
