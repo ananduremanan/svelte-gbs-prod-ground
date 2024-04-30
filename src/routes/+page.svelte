@@ -5,6 +5,7 @@
 	import { dataSource } from '$lib/dataSource';
 	import ActionButton from '$lib/ActionButton.svelte';
 	import SelectShad from '$lib/dropdown/SelectShad.svelte';
+	import SelectRestructured from '$lib/dropdown/SelectRestructured.svelte';
 
 	const columns = [
 		{ field: 'OrderID', width: '200', textAlign: 'Right', filter: true },
@@ -21,7 +22,8 @@
 </script>
 
 <div class="flex flex-col gap-4 px-20 py-8">
-	<Select items={countries} bind:value={selected} placeholder={'Select a Country'} />
+	<!-- <Select items={countries} bind:value={selected} placeholder={'Select a Country'} /> -->
 	<!-- <Grid {columns} {dataSource} pageSettings={{ pageNumber: 10 }} /> -->
 	<SelectShad items={countries} />
+	<SelectRestructured items={countries} />
 </div>
