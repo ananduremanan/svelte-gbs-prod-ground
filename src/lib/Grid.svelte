@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { AngleLeftOutline, AngleRightOutline, FilterOutline } from 'flowbite-svelte-icons';
+	import {
+		AngleLeftOutline,
+		AngleRightOutline,
+		FilterOutline,
+		SearchOutline
+	} from 'flowbite-svelte-icons';
 	import FilterPopUp from './FilterPopUp.svelte';
 	import {
 		handleApplyFilterHelper,
@@ -17,7 +22,6 @@
 	export let columns: any[];
 	export let pageSettings: PageSettingsProps;
 	export let enableSearch = false;
-	// export let gridHeight: number = 72;
 	export let lazy: boolean = false;
 	export let enableExcelExport: boolean = false;
 
@@ -25,6 +29,7 @@
 	let pageStart = 0;
 	let pageEnd = 10;
 	let fullDataSource = [...dataSource];
+	let searchParam: string | number;
 
 	// Total Number Of Pages
 	const totalPages = Math.ceil(dataSource.length / pageSettings.pageNumber);
@@ -32,12 +37,20 @@
 	// Added an additional column to show filter menu popup for each Column
 	columns = columns.map((column) => ({ ...column, showFilterPopup: false, isFilterActive: false }));
 
+	// Function to reset datasource when search cleared
+	function resetSearch(event: any) {
+		if (event.target.value === '') {
+			dataSource = fullDataSource;
+			goToPage(0);
+		}
+	}
+
 	// Function For Seraching the Grid
-	function handleSearch(event: any) {
+	function handleSearch(searchParam: any) {
 		if (!lazy) {
 			dataSource = fullDataSource.filter((item: any) => {
 				for (const key in item) {
-					if (item[key].toString().toLowerCase().includes(event.target.value.toLowerCase())) {
+					if (item[key].toString().toLowerCase().includes(searchParam.toLowerCase())) {
 						return true;
 					}
 				}
@@ -100,6 +113,7 @@
 <div class="flex flex-col">
 	{#if dataSource}
 		{#if columns}
+			<!-- Grid Header Options -->
 			{#if enableSearch || enableExcelExport}
 				<div class="flex justify-end border p-1 gap-2">
 					{#if enableExcelExport}
@@ -108,12 +122,20 @@
 						>
 					{/if}
 					{#if enableSearch}
-						<div>
-							<Search size="sm" on:input={handleSearch}></Search>
+						<div class="flex gap-1">
+							<Search size="sm" bind:value={searchParam} on:input={resetSearch}></Search>
+							<button
+								class="bg-orange-500 rounded-lg text-white w-10 flex items-center justify-center"
+								on:click={() => {
+									handleSearch(searchParam);
+								}}><SearchOutline /></button
+							>
 						</div>
 					{/if}
 				</div>
 			{/if}
+
+			<!-- Data Table -->
 			<table>
 				<thead>
 					<tr>
@@ -176,6 +198,7 @@
 					{/if}
 				</tbody>
 			</table>
+
 			<!-- Pagination Pages -->
 			<div class="flex border p-2 justify-between">
 				<div class="flex gap-4">

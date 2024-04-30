@@ -7,6 +7,7 @@
 	export let lazy: boolean = false;
 	export let dropStyle: string = '';
 	export let disabled: boolean = false;
+	export let placeholder: string = '';
 
 	let fullDataSource = [...items];
 	let displayValue: any = undefined;
@@ -30,36 +31,43 @@
 	}
 </script>
 
-<div class="relative">
-	<input
-		type="text"
-		class={twMerge(`${disabled ? 'bg-gray-300' : 'px-3 py-2 border rounded'}`, $$props.class)}
-		on:focus={inputFocusHandler}
-		bind:value={displayValue}
-		on:input={inputSearchHandler}
-		{disabled}
-	/>
-	{#if displayValue}
+<div class="relative w-64">
+	<div class="relative">
+		<input
+			type="text"
+			class={twMerge(
+				`${disabled ? 'bg-gray-300' : 'px-3 py-2 border rounded w-full'}`,
+				$$props.class
+			)}
+			on:focus={inputFocusHandler}
+			bind:value={displayValue}
+			on:input={inputSearchHandler}
+			{disabled}
+			{placeholder}
+		/>
+		{#if displayValue}
+			<button
+				class="absolute top-0 right-4 h-full px-3 flex items-center mr-2"
+				on:click={() => {
+					displayValue = undefined;
+					value = undefined;
+					items = fullDataSource;
+				}}
+			>
+				<CloseOutline color="gray" />
+			</button>
+		{/if}
 		<button
-			class="absolute top-0 right-4 h-full px-3 flex items-center mr-2"
+			class="absolute top-0 right-0 h-full px-3 flex items-center"
 			on:click={() => {
-				displayValue = undefined;
-				value = undefined;
+				if (!disabled) {
+					showOptions = !showOptions;
+				}
 			}}
 		>
-			<CloseOutline color="gray" />
+			<CaretDownSolid color="gray" />
 		</button>
-	{/if}
-	<button
-		class="absolute top-0 right-0 h-full px-3 flex items-center"
-		on:click={() => {
-			if (!disabled) {
-				showOptions = !showOptions;
-			}
-		}}
-	>
-		<CaretDownSolid color="gray" />
-	</button>
+	</div>
 	<!-- options dropdown list -->
 	{#if showOptions}
 		<div
@@ -69,7 +77,7 @@
 			)}
 		>
 			{#if items.length > 0}
-				{#each items as { value: itemValue, name, imgSrc }}
+				{#each items as { value: itemValue, label, imgSrc }}
 					<button
 						class="px-4 py-2 w-full text-left hover:bg-orange-400 flex gap-2"
 						on:click={() => {
@@ -81,7 +89,7 @@
 						{#if imgSrc}
 							<img src={imgSrc} alt={`imgSrc`} class="w-5 h-5 rounded-full object-cover" />
 						{/if}
-						{name}</button
+						{label}</button
 					>
 				{/each}
 			{:else}
