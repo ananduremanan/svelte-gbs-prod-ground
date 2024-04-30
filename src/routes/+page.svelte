@@ -13,7 +13,7 @@
 		{ field: 'CustomerID', width: '100' },
 		{ field: 'EmployeeID', width: '100', textAlign: 'Right' },
 		{ field: 'Freight', headerText: 'Freight', width: '200' },
-		{ field: 'ShipCountry', width: '200', clipMode: 'EllipsisWithTooltip', filter: true },
+		{ field: 'ShipCountry', width: '200', filter: true },
 		{ field: 'ShipAddress', width: '150' },
 		{ field: 'ShipPostalCode', width: '150' },
 		{ field: 'Grid Action', template: ActionButton }

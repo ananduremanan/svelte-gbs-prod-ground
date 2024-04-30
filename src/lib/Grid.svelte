@@ -115,36 +115,43 @@
 <div class="flex flex-col">
 	{#if dataSource}
 		{#if columns}
-			<!-- Grid Header Options -->
-			{#if enableSearch || enableExcelExport}
-				<div class="flex justify-end border p-1 gap-2">
-					{#if enableExcelExport}
-						<Button on:click={() => exportToExcelHelper(dataSource, columns)} class="p-1"
-							>Export as Excel</Button
-						>
-					{/if}
-					{#if enableSearch}
-						<div class="flex gap-1">
-							<Search size="sm" bind:value={searchParam} on:input={resetSearch} class="outline-none"
-							></Search>
-							<button
-								class="bg-orange-500 rounded-lg text-white w-10 flex items-center justify-center"
-								on:click={() => {
-									handleSearch(searchParam);
-								}}><SearchOutline /></button
-							>
-						</div>
-					{/if}
-				</div>
-			{/if}
-
 			<!-- Data Table -->
-			<table class="table-auto">
+			<table>
 				<thead>
+					<!-- Grid Header Options -->
+					<tr>
+						<th class="border p-1" colspan={columns.length}>
+							{#if enableSearch || enableExcelExport}
+								<div class="flex justify-end">
+									{#if enableExcelExport}
+										<Button on:click={() => exportToExcelHelper(dataSource, columns)} class="p-1"
+											>Export as Excel</Button
+										>
+									{/if}
+									{#if enableSearch}
+										<div class="flex gap-1">
+											<Search
+												size="sm"
+												bind:value={searchParam}
+												on:input={resetSearch}
+												class="outline-none"
+											></Search>
+											<button
+												class="bg-orange-500 rounded-lg text-white w-10 flex items-center justify-center"
+												on:click={() => {
+													handleSearch(searchParam);
+												}}><SearchOutline /></button
+											>
+										</div>
+									{/if}
+								</div>
+							{/if}
+						</th>
+					</tr>
 					<tr>
 						{#each columns as columnHeader}
 							<th class="border p-2">
-								<div class="flex items-center gap-2">
+								<div class="flex items-center gap-2 text-sm">
 									{#if columnHeader.headerText}
 										{columnHeader.headerText}
 									{:else}
@@ -156,7 +163,7 @@
 											on:click={() =>
 												(columnHeader.showFilterPopup = !columnHeader.showFilterPopup)}
 											><FilterOutline
-												size="xs"
+												size="sm"
 												class={`${columnHeader.isFilterActive ? 'text-red-400' : ''}`}
 											/></button
 										>

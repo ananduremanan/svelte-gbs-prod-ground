@@ -37,12 +37,12 @@
 
 {#if show}
 	<div class="absolute bg-gray-100 p-2 border z-10 mt-40 flex items-end flex-col shadow-lg gap-2">
-		<Select class="mt-2" items={filterOptions} bind:value={selected} />
+		<Select class="mt-2 text-sm" items={filterOptions} bind:value={selected} />
 		<input
 			type="text"
 			bind:value={filterValue}
 			placeholder="Enter filter value"
-			class="rounded-lg"
+			class="rounded-lg p-2 text-sm"
 		/>
 		<div class="mt-2">
 			<Button on:click={onCancel} class="text-xs bg-red-400 p-1 rounded-lg hover:bg-red-600"
