@@ -202,9 +202,11 @@
 						{#each dataSource.slice(currentPage * pageSettings.pageNumber, (currentPage + 1) * pageSettings.pageNumber) as rowData}
 							<tr>
 								{#each columns as column}
-									<td class={`border p-2 text-sm ${column.template ? 'flex justify-center' : ''}`}>
+									<td class={`border p-2 text-sm ${column.template ? '' : ''}`}>
 										{#if column.template}
-											<svelte:component this={column.template} {rowData} />
+											<div class="flex justify-center items-center h-full">
+												<svelte:component this={column.template} {rowData} />
+											</div>
 										{:else}
 											{rowData[column.field]}
 										{/if}

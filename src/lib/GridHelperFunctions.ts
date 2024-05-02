@@ -88,9 +88,11 @@ export function clearFilterHelper(
 }
 
 export function exportToExcelHelper(dataSource: any[], columns: any[], excelName: string) {
+	// This will remove the column template.
+	const templateRemovedColumn = columns.filter((column) => !column.template);
 	const dataToExport = dataSource.map((row) => {
 		const rowData: any = {};
-		columns.forEach((column: any) => {
+		templateRemovedColumn.forEach((column: any) => {
 			rowData[column.field] = row[column.field];
 		});
 		return rowData;
@@ -103,17 +105,22 @@ export function exportToExcelHelper(dataSource: any[], columns: any[], excelName
 
 export function exportToPDFHelper(dataSource: any[], columns: any[], pdfName: string) {
 	const doc: any = new jsPDF();
+	// This will remove the columns with template.
+	const printableColumns = columns.filter((column) => !column.template);
+
 	const dataToExport = dataSource.map((row) => {
 		const rowData: any = {};
-		columns.forEach((column: any) => {
+		printableColumns.forEach((column: any) => {
 			rowData[column.field] = row[column.field];
 		});
 		return Object.values(rowData);
 	});
-	const columnNames = columns.map((column: any) => column.field);
+
+	const columnNames = printableColumns.map((column: any) => column.field);
 	doc.autoTable({
 		head: [columnNames],
 		body: dataToExport
 	});
+
 	doc.save(`${pdfName}.pdf`);
 }
