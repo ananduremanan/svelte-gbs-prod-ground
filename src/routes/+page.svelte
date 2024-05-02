@@ -26,5 +26,12 @@
 	<!-- <Select items={countries} bind:selected /> -->
 	<SelectRestructured items={countries} bind:selected />
 
-	<Grid {columns} {dataSource} pageSettings={{ pageNumber: 10 }} enableSearch enableExcelExport />
+	<Grid
+		{columns}
+		{dataSource}
+		pageSettings={{ pageNumber: 10 }}
+		enableSearch
+		enableExcelExport
+		enablePdfExport
+	/>
 </div>

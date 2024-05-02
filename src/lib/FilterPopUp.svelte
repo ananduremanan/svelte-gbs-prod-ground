@@ -49,11 +49,11 @@
 				>Cancel</Button
 			>
 			{#if isFilterActive}
-				<Button on:click={clearFilter} class="text-xs bg-blue-400 p-1 rounded-lg hover:bg-blue-600"
+				<Button on:click={clearFilter} class="text-xs bg-blue-500 p-1 rounded-lg hover:bg-blue-600"
 					>Clear Filter</Button
 				>
 			{/if}
-			<Button on:click={applyFilter} class="text-xs bg-blue-400 p-1 rounded-lg hover:bg-blue-600"
+			<Button on:click={applyFilter} class="text-xs bg-blue-500 p-1 rounded-lg hover:bg-blue-600"
 				>Apply Filter</Button
 			>
 		</div>

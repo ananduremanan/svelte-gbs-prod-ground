@@ -9,7 +9,8 @@
 	import {
 		handleApplyFilterHelper,
 		clearFilterHelper,
-		exportToExcelHelper
+		exportToExcelHelper,
+		exportToPDFHelper
 	} from './GridHelperFunctions';
 	import { Search, Button } from 'flowbite-svelte';
 
@@ -25,6 +26,8 @@
 	export let lazy: boolean = false;
 	export let enableExcelExport: boolean = false;
 	export let excelName: string = 'data';
+	export let enablePdfExport: boolean = false;
+	export let pdfName: string = 'data';
 
 	let currentPage = 0;
 	let pageStart = 0;
@@ -122,13 +125,18 @@
 					<!-- Grid Header Options -->
 					<tr>
 						<th class="border p-1" colspan={columns.length}>
-							{#if enableSearch || enableExcelExport}
+							{#if enableSearch || enableExcelExport || enablePdfExport}
 								<div class="flex justify-end gap-2">
 									{#if enableExcelExport}
 										<button
 											on:click={() => exportToExcelHelper(dataSource, columns, excelName)}
-											class="p-1 bg-orange-400 rounded-lg text-xs text-white"
-											>Export as Excel</button
+											class="p-1 bg-blue-500 rounded-lg text-xs text-white">Export as Excel</button
+										>
+									{/if}
+									{#if enablePdfExport}
+										<button
+											on:click={() => exportToPDFHelper(dataSource, columns, pdfName)}
+											class="p-1 bg-blue-500 rounded-lg text-xs text-white">Export as PDF</button
 										>
 									{/if}
 									{#if enableSearch}
@@ -137,10 +145,10 @@
 												size="sm"
 												bind:value={searchParam}
 												on:input={resetSearch}
-												class="outline-none"
+												class="outline-none p-2 text-sm"
 											></Search>
 											<button
-												class="bg-orange-500 rounded-lg text-white w-10 flex items-center justify-center"
+												class="bg-blue-500 rounded-lg text-white w-10 flex items-center justify-center"
 												on:click={() => {
 													handleSearch(searchParam);
 												}}><SearchOutline /></button
@@ -251,7 +259,7 @@
 									</div>
 
 									<!-- Shows Total Pages and Items In Grid -->
-									<div class="flex">
+									<div class="flex text-sm">
 										{currentPage + 1} of {totalPages} pages ({dataSource.length} items)
 									</div>
 								</div>

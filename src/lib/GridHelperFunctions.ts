@@ -1,4 +1,6 @@
 import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 let activeFilterArray: Object[] = [];
 
@@ -97,4 +99,21 @@ export function exportToExcelHelper(dataSource: any[], columns: any[], excelName
 	const wb = XLSX.utils.book_new();
 	XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
 	XLSX.writeFile(wb, `${excelName}.xlsx`);
+}
+
+export function exportToPDFHelper(dataSource: any[], columns: any[], pdfName: string) {
+	const doc: any = new jsPDF();
+	const dataToExport = dataSource.map((row) => {
+		const rowData: any = {};
+		columns.forEach((column: any) => {
+			rowData[column.field] = row[column.field];
+		});
+		return Object.values(rowData);
+	});
+	const columnNames = columns.map((column: any) => column.field);
+	doc.autoTable({
+		head: [columnNames],
+		body: dataToExport
+	});
+	doc.save(`${pdfName}.pdf`);
 }
