@@ -12,7 +12,7 @@
 		exportToExcelHelper,
 		exportToPDFHelper
 	} from './GridHelperFunctions';
-	import { Search, Button } from 'flowbite-svelte';
+	import { Search } from 'flowbite-svelte';
 
 	interface PageSettingsProps {
 		pageNumber: number;

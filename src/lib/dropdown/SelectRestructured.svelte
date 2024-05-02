@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { tick } from 'svelte';
 	import ChevronsUpDown from 'lucide-svelte/icons/chevrons-up-down';
+	import X from 'lucide-svelte/icons/x';
 	import { SearchOutline } from 'flowbite-svelte-icons';
 	import Check from 'lucide-svelte/icons/check';
 	import { cn } from '$lib/utils.js';
@@ -49,16 +50,32 @@
 </script>
 
 <div>
-	<button
-		class="flex items-center border px-4 py-2 w-[200px] justify-between rounded-lg font-medium text-sm relative"
-		on:click|stopPropagation={togglePopover}
-		bind:this={popoverTrigger}
-		>{#if selectedDisplay}
-			{selectedDisplay}
-		{:else}
-			{placeholder}
-		{/if}<ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" /></button
-	>
+	<div class="relative w-[200px]">
+		<button
+			class="flex items-center border px-4 py-2 w-[200px] justify-between rounded-lg font-medium text-sm"
+			on:click|stopPropagation={togglePopover}
+			bind:this={popoverTrigger}
+		>
+			{#if selectedDisplay}
+				{selectedDisplay}
+			{:else}
+				{placeholder}
+			{/if}
+			<ChevronsUpDown class="ml-2 h-4 w-4 opacity-50" />
+		</button>
+		{#if selectedDisplay}
+			<button
+				class="absolute right-8 top-0 h-full flex items-center px-2 z-20"
+				on:click={() => {
+					selected = '';
+					selectedDisplay = '';
+				}}
+			>
+				<X class="h-4 w-4 opacity-50" />
+			</button>
+		{/if}
+	</div>
+
 	<!-- Item List Popover -->
 	{#if showPopover}
 		<div
