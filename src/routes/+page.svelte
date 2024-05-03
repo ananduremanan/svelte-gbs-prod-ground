@@ -1,12 +1,10 @@
 <script lang="ts">
 	import { countries } from '$lib/countries';
-	// import Select from '$lib/dropdown/Select.svelte';
 	import Grid from '$lib/Grid.svelte';
 	import { dataSource } from '$lib/dataSource';
 	import ActionButton from '$lib/ActionButton.svelte';
-	import SelectShad from '$lib/dropdown/SelectShad.svelte';
 	import SelectRestructured from '$lib/dropdown/SelectRestructured.svelte';
-	import Select from '@grampro/svelte-block/Select.svelte';
+	import MultiSelect from '$lib/multiselect/MultiSelect.svelte';
 
 	const columns = [
 		{ field: 'OrderID', width: '200', textAlign: 'Right', filter: true },
@@ -23,8 +21,7 @@
 </script>
 
 <div class="flex flex-col gap-4 px-20 py-8">
-	<!-- <Select items={countries} bind:selected /> -->
-	<SelectRestructured items={countries} bind:selected />
+	<!-- <SelectRestructured items={countries} bind:selected />
 
 	<Grid
 		{columns}
@@ -35,5 +32,7 @@
 		enablePdfExport
 		excelName="export_data_excel"
 		pdfName="export_pdf_data"
-	/>
+	/> -->
+
+	<MultiSelect items={countries} />
 </div>
