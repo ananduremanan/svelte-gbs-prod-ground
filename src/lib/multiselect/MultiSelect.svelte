@@ -10,7 +10,8 @@
 	export let items: any[];
 	export let selected: any[] = [];
 	export let lazy: boolean = false;
-	export let truncate: boolean = false;
+	export let truncate: boolean = true;
+	export let enableSelectAll: boolean = false;
 
 	let showPopover = false;
 	let popoverTrigger: any;
@@ -62,15 +63,20 @@
 
 	// Function to update the display of selected items
 	function updateSelectedDisplay() {
-		selectedDisplay =
-			selected.length > 0
-				? selected
-						.map((value) => {
-							const item = fullDataSource.find((item) => item.value === value);
-							return item ? item.label : '';
-						})
-						.join(', ')
-				: '';
+		if (selected.length > 0) {
+			const displayedItems = selected.slice(0, 3).map((value) => {
+				const item = fullDataSource.find((item) => item.value === value);
+				return item ? item.label : '';
+			});
+			selectedDisplay = displayedItems.join(', ');
+
+			if (selected.length > 3 && truncate) {
+				const remainingCount = selected.length - 3;
+				selectedDisplay += `, +${remainingCount} more`;
+			}
+		} else {
+			selectedDisplay = '';
+		}
 	}
 </script>
 
@@ -81,24 +87,28 @@
 			on:click|stopPropagation={togglePopover}
 			bind:this={popoverTrigger}
 		>
-			{#if selectedDisplay}
-				{selectedDisplay}
-			{:else}
-				{placeholder}
-			{/if}
-			<ChevronsUpDown class="ml-2 h-4 w-4 opacity-50" />
+			<div>
+				{#if selectedDisplay}
+					{selectedDisplay}
+				{:else}
+					{placeholder}
+				{/if}
+			</div>
+			<div class="flex items-center">
+				{#if selectedDisplay}
+					<button
+						class="h-full flex items-center px-2 z-20"
+						on:click={() => {
+							selected = [];
+							selectedDisplay = '';
+						}}
+					>
+						<X class="h-4 w-4 opacity-50" />
+					</button>
+				{/if}
+				<ChevronsUpDown class="ml-2 h-4 w-4 opacity-50" />
+			</div>
 		</button>
-		{#if selectedDisplay}
-			<button
-				class="absolute right-8 top-0 h-full flex items-center px-2 z-20"
-				on:click={() => {
-					selected = [];
-					selectedDisplay = '';
-				}}
-			>
-				<X class="h-4 w-4 opacity-50" />
-			</button>
-		{/if}
 	</div>
 
 	<!-- Item List Popover -->
@@ -123,6 +133,12 @@
 
 			<!-- Mapped Items -->
 			{#if items.length > 0}
+				<div class="px-4 py-1 w-full rounded-lg mt-1 text-sm flex items-center">
+					{#if enableSelectAll}
+						<input type="checkbox" id="selectall" />
+						<label for="selectall" class="ml-3">Select All</label>
+					{/if}
+				</div>
 				{#each items as { value, label }}
 					<button
 						class="px-2 py-1 w-full text-left hover:bg-blue-100 gap-2 rounded-lg mt-1 text-sm flex items-center"

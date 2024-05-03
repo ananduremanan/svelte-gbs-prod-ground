@@ -34,5 +34,5 @@
 		pdfName="export_pdf_data"
 	/> -->
 
-	<MultiSelect items={countries} />
+	<MultiSelect items={countries} enableSelectAll />
 </div>
