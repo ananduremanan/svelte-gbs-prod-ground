@@ -18,6 +18,7 @@
 	let searchRef: any = null;
 	let fullDataSource = [...items];
 	let selectedDisplay: string = '';
+	let selectAllChecked = false;
 
 	// Search handler function
 	function inputSearchHandler(event: any) {
@@ -78,6 +79,18 @@
 			selectedDisplay = '';
 		}
 	}
+
+	// Function for handling select all
+	function handleSelectAll() {
+		selectAllChecked = !selectAllChecked;
+		if (selectAllChecked) {
+			selected = items.map((item: any) => item.value);
+			updateSelectedDisplay();
+		} else {
+			selected = [];
+			selectedDisplay = '';
+		}
+	}
 </script>
 
 <div>
@@ -133,12 +146,17 @@
 
 			<!-- Mapped Items -->
 			{#if items.length > 0}
-				<div class="px-4 py-1 w-full rounded-lg mt-1 text-sm flex items-center">
-					{#if enableSelectAll}
-						<input type="checkbox" id="selectall" />
-						<label for="selectall" class="ml-3">Select All</label>
-					{/if}
-				</div>
+				{#if enableSelectAll}
+					<div class="px-4 py-1 w-full rounded-lg mt-1 text-sm flex items-center cursor-pointer">
+						<input
+							type="checkbox"
+							id="selectall"
+							value={selectAllChecked}
+							on:change={handleSelectAll}
+						/>
+						<label for="selectall" class="ml-3 cursor-pointer">Select All</label>
+					</div>
+				{/if}
 				{#each items as { value, label }}
 					<button
 						class="px-2 py-1 w-full text-left hover:bg-blue-100 gap-2 rounded-lg mt-1 text-sm flex items-center"
