@@ -35,22 +35,26 @@
 
 	const getData = async () => {
 		let dataArray = [];
-		const res = await fetch(
-			'https://raw.githubusercontent.com/json-iterator/test-data/master/large-file.json'
-		);
-		const data = await res.json();
-		if (data) {
-			dataArray = data.map((item: any) => {
-				return {
-					id: item.id,
-					userName: item.actor.login,
-					repo: item.repo.name,
-					repoUrl: item.repo.url
-				};
-			});
-		}
+		try {
+			const res = await fetch(
+				'https://raw.githubusercontent.com/json-iterator/test-data/master/large-file.json'
+			);
+			const data = await res.json();
+			if (data) {
+				dataArray = data.map((item: any) => {
+					return {
+						id: item.id,
+						userName: item.actor.login,
+						repo: item.repo.name,
+						repoUrl: item.repo.url
+					};
+				});
+			}
 
-		return dataArray;
+			return dataArray;
+		} catch (error) {
+			console.error(error);
+		}
 	};
 
 	let gitData: any[] = [];
