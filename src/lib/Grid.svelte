@@ -15,7 +15,7 @@
 		exportToPDFHelper
 	} from './GridHelperFunctions';
 	import { Search } from 'flowbite-svelte';
-	import { onMount, afterUpdate } from 'svelte';
+	// import { onMount, afterUpdate } from 'svelte';
 
 	interface PageSettingsProps {
 		pageNumber: number;
@@ -39,14 +39,20 @@
 	let searchParam: string | number;
 
 	// Total Number Of Pages Calculation
-	let totalPages = 0;
+	let totalPages = Math.ceil(dataSource.length / pageSettings.pageNumber);
 
-	function calculateTotalPages() {
-		totalPages = Math.ceil(dataSource.length / pageSettings.pageNumber);
-	}
+	// let totalPages = 0;
 
-	onMount(calculateTotalPages);
-	afterUpdate(calculateTotalPages);
+	// This method is essential for carrying out activities after the component is mounted onto the DOM.
+	// Its goal is to guarantee that the data source updates with parent,
+	// especially in situations when the parent component's asynchronous data fetching takes place.
+	// function afterUpdateFunctions() {
+	// 	totalPages = Math.ceil(dataSource.length / pageSettings.pageNumber);
+	// 	fullDataSource = [...dataSource];
+	// }
+
+	// onMount(afterUpdateFunctions);
+	// afterUpdate(afterUpdateFunctions);
 
 	// Added an additional column to show filter menu popup for each Column
 	columns = columns.map((column) => ({ ...column, showFilterPopup: false, isFilterActive: false }));
@@ -79,7 +85,7 @@
 		const { columns: updatedColumns, dataSource: updatedDataSource } = handleApplyFilterHelper(
 			event,
 			columns,
-			dataSource,
+			fullDataSource,
 			fullDataSource
 		);
 		columns = updatedColumns;
@@ -91,7 +97,7 @@
 		const { columns: updatedColumns, dataSource: updatedDataSource } = clearFilterHelper(
 			event,
 			columns,
-			dataSource,
+			fullDataSource,
 			fullDataSource
 		);
 		columns = updatedColumns;

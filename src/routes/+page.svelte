@@ -6,12 +6,13 @@
 	// import MultiSelect from '@grampro/svelte-block/MultiSelect.svelte';
 	import { dataSource } from '$lib/dataSource';
 	import ActionButton from '$lib/ActionButton.svelte';
+	import ImageAction from '$lib/ImageAction.svelte';
 
 	import Button from '$lib/button/Button.svelte';
 	// import SelectRestructured from '$lib/dropdown/SelectRestructured.svelte';
 	import MultiSelect from '$lib/multiselect/MultiSelect.svelte';
 	import Grid from '$lib/Grid.svelte';
-	import { Spinner } from 'flowbite-svelte';
+	import { Img, Spinner } from 'flowbite-svelte';
 
 	const columns = [
 		{ field: 'OrderID', width: '200', textAlign: 'Right', filter: true },
@@ -26,9 +27,17 @@
 
 	const gitDataColumns: any[] = [
 		{ field: 'id', width: '200', textAlign: 'Right', filter: true },
+		{
+			field: 'imgUrl',
+			width: '200',
+			textAlign: 'Right',
+			template: ImageAction,
+			showTemplateInExport: true
+		},
 		{ field: 'userName', width: '100' },
 		{ field: 'repo', width: '100', textAlign: 'Right' },
-		{ field: 'repoUrl', headerText: 'Repo URL', width: '200' }
+		{ field: 'repoUrl', headerText: 'Repo URL', width: '200' },
+		{ field: 'Grid Action', template: ActionButton }
 	];
 
 	let selected: any = undefined;
@@ -46,7 +55,8 @@
 						id: item.id,
 						userName: item.actor.login,
 						repo: item.repo.name,
-						repoUrl: item.repo.url
+						repoUrl: item.repo.url,
+						imgUrl: item.actor.avatar_url
 					};
 				});
 			}
@@ -71,14 +81,16 @@
 		<Button>Submit</Button>
 	</div>
 
-	<Grid
-		columns={gitDataColumns}
-		dataSource={gitData}
-		pageSettings={{ pageNumber: 10 }}
-		enableSearch
-		enableExcelExport
-		enablePdfExport
-		excelName="export_data_excel"
-		pdfName="export_pdf_data"
-	/>
+	{#if gitData}
+		<Grid
+			columns={gitDataColumns}
+			dataSource={gitData}
+			pageSettings={{ pageNumber: 10 }}
+			enableSearch
+			enableExcelExport
+			enablePdfExport
+			excelName="export_data_excel"
+			pdfName="export_pdf_data"
+		/>
+	{/if}
 </div>
