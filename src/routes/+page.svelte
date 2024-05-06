@@ -1,6 +1,7 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { countries } from '$lib/countries';
-	import Grid from '@grampro/svelte-block/Grid.svelte';
+	// import Grid from '@grampro/svelte-block/Grid.svelte';
 	import Select from '@grampro/svelte-block/Select.svelte';
 	// import MultiSelect from '@grampro/svelte-block/MultiSelect.svelte';
 	import { dataSource } from '$lib/dataSource';
@@ -9,7 +10,8 @@
 	import Button from '$lib/button/Button.svelte';
 	// import SelectRestructured from '$lib/dropdown/SelectRestructured.svelte';
 	import MultiSelect from '$lib/multiselect/MultiSelect.svelte';
-	// import Grid from '$lib/Grid.svelte';
+	import Grid from '$lib/Grid.svelte';
+	import { Spinner } from 'flowbite-svelte';
 
 	const columns = [
 		{ field: 'OrderID', width: '200', textAlign: 'Right', filter: true },
@@ -22,7 +24,40 @@
 		{ field: 'Grid Action', template: ActionButton }
 	];
 
+	const gitDataColumns: any[] = [
+		{ field: 'id', width: '200', textAlign: 'Right', filter: true },
+		{ field: 'userName', width: '100' },
+		{ field: 'repo', width: '100', textAlign: 'Right' },
+		{ field: 'repoUrl', headerText: 'Repo URL', width: '200' }
+	];
+
 	let selected: any = undefined;
+
+	const getData = async () => {
+		let dataArray = [];
+		const res = await fetch(
+			'https://raw.githubusercontent.com/json-iterator/test-data/master/large-file.json'
+		);
+		const data = await res.json();
+		if (data) {
+			dataArray = data.map((item: any) => {
+				return {
+					id: item.id,
+					userName: item.actor.login,
+					repo: item.repo.name,
+					repoUrl: item.repo.url
+				};
+			});
+		}
+
+		return dataArray;
+	};
+
+	let gitData: any[] = [];
+
+	onMount(async () => {
+		gitData = await getData();
+	});
 </script>
 
 <div class="flex flex-col gap-4 px-20 py-8">
@@ -33,8 +68,8 @@
 	</div>
 
 	<Grid
-		{columns}
-		{dataSource}
+		columns={gitDataColumns}
+		dataSource={gitData}
 		pageSettings={{ pageNumber: 10 }}
 		enableSearch
 		enableExcelExport

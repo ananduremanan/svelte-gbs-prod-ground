@@ -5,12 +5,10 @@
 </script>
 
 <div class="flex gap-2">
-	<button
-		class="p-1 flex items-center bg-blue-300 rounded-xl"
-		on:click={() => console.log('Edit', rowData)}><InfoCircleSolid /></button
+	<button class="p-1 flex items-center rounded-xl" on:click={() => console.log('Edit', rowData)}
+		><InfoCircleSolid color="blue" /></button
 	>
-	<button
-		class="p-1 flex items-center bg-red-300 rounded-xl"
-		on:click={() => console.log('Delete', rowData)}><TrashBinSolid /></button
+	<button class="p-1 flex items-center rounded-xl" on:click={() => console.log('Delete', rowData)}
+		><TrashBinSolid color="red" /></button
 	>
 </div>

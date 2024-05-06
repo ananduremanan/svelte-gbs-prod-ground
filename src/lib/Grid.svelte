@@ -3,7 +3,9 @@
 		AngleLeftOutline,
 		AngleRightOutline,
 		FilterOutline,
-		SearchOutline
+		SearchOutline,
+		ChevronDoubleRightOutline,
+		ChevronDoubleLeftOutline
 	} from 'flowbite-svelte-icons';
 	import FilterPopUp from './FilterPopUp.svelte';
 	import {
@@ -13,6 +15,7 @@
 		exportToPDFHelper
 	} from './GridHelperFunctions';
 	import { Search } from 'flowbite-svelte';
+	import { onMount, afterUpdate } from 'svelte';
 
 	interface PageSettingsProps {
 		pageNumber: number;
@@ -35,8 +38,15 @@
 	let fullDataSource = [...dataSource];
 	let searchParam: string | number;
 
-	// Total Number Of Pages
-	const totalPages = Math.ceil(dataSource.length / pageSettings.pageNumber);
+	// Total Number Of Pages Calculation
+	let totalPages = 0;
+
+	function calculateTotalPages() {
+		totalPages = Math.ceil(dataSource.length / pageSettings.pageNumber);
+	}
+
+	onMount(calculateTotalPages);
+	afterUpdate(calculateTotalPages);
 
 	// Added an additional column to show filter menu popup for each Column
 	columns = columns.map((column) => ({ ...column, showFilterPopup: false, isFilterActive: false }));
@@ -49,7 +59,7 @@
 		}
 	}
 
-	// Function For Seraching the Grid
+	// Function For Serching the Grid
 	function handleSearch(searchParam: any) {
 		if (!lazy) {
 			dataSource = fullDataSource.filter((item: any) => {
@@ -60,13 +70,11 @@
 				}
 				return false;
 			});
-			console.log(dataSource);
-
 			goToPage(0);
 		}
 	}
 
-	// Filtering Helper Methods
+	// *** Filtering Helper Methods Starts Here
 	function handleApplyFilter(event: any) {
 		const { columns: updatedColumns, dataSource: updatedDataSource } = handleApplyFilterHelper(
 			event,
@@ -89,8 +97,9 @@
 		columns = updatedColumns;
 		dataSource = updatedDataSource;
 	}
+	// Filtering Helper Methods Ends  ***
 
-	// Page Navigation Helper Methods
+	// *** Page Navigation Helper Methods Starts Here
 	function nextPage() {
 		if (currentPage < totalPages - 1) {
 			currentPage++;
@@ -111,9 +120,22 @@
 		}
 	}
 
+	function goToEndPage(): void {
+		currentPage = totalPages - 1;
+		pageStart = Math.floor((totalPages - 1) / 10) * 10;
+		pageEnd = pageStart + 10;
+	}
+
+	function goToFirstPage(): void {
+		currentPage = 0;
+		pageStart = 0;
+		pageEnd = 10;
+	}
+
 	function goToPage(page: number): void {
 		currentPage = pageStart + page;
 	}
+	// Page Navigation Helper Methods Ends Here ***
 </script>
 
 <div class="flex flex-col">
@@ -219,6 +241,11 @@
 							<td colspan={columns.length} class="border">
 								<div class="flex p-2 justify-between">
 									<div class="flex gap-4">
+										<button class="-mr-2" on:click={goToFirstPage}
+											><ChevronDoubleLeftOutline
+												class={`${currentPage === 0 ? 'text-gray-200' : ''}`}
+											/></button
+										>
 										<button on:click={prevPage}
 											><AngleLeftOutline
 												class={`${currentPage === 0 ? 'text-gray-200' : ''}`}
@@ -238,7 +265,7 @@
 											{#each Array(Math.min(10, Math.ceil(dataSource.length / pageSettings.pageNumber) - pageStart)) as _, i}
 												<button
 													on:click={() => goToPage(i)}
-													class={`${pageStart + i === currentPage ? 'font-bold text-white p-1 w-6 h-6 bg-blue-500 flex items-center justify-center rounded-full' : ''}`}
+													class={`${pageStart + i === currentPage ? 'font-bold text-white p-2 h-6 bg-blue-500 flex items-center justify-center rounded-full w-auto' : ''}`}
 													>{pageStart + i + 1}</button
 												>
 											{/each}
@@ -255,6 +282,11 @@
 										</div>
 										<button on:click={nextPage}
 											><AngleRightOutline
+												class={`${currentPage === totalPages - 1 ? 'text-gray-200' : ''}`}
+											/></button
+										>
+										<button class="-ml-2" on:click={goToEndPage}
+											><ChevronDoubleRightOutline
 												class={`${currentPage === totalPages - 1 ? 'text-gray-200' : ''}`}
 											/></button
 										>
