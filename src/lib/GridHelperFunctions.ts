@@ -30,6 +30,7 @@ export function handleApplyFilterHelper(
 
 	// Apply all active filters
 	dataSource = fullDataSource;
+	fullDataSource = [...dataSource];
 	activeFilterArray.forEach((filter: any) => {
 		dataSource = dataSource.filter((item: any) => {
 			let columnValue = item[filter.filterColumn].toString().toLowerCase();
@@ -44,7 +45,7 @@ export function handleApplyFilterHelper(
 		});
 	});
 
-	return { columns, dataSource };
+	return { columns, dataSource, fullDataSource };
 }
 
 // Function For Clearing the Filter

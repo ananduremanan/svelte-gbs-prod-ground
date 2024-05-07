@@ -87,10 +87,6 @@
 			dataSource={gitData}
 			pageSettings={{ pageNumber: 10 }}
 			enableSearch
-			enableExcelExport
-			enablePdfExport
-			excelName="export_data_excel"
-			pdfName="export_pdf_data"
 		/>
 	{/if}
 </div>
