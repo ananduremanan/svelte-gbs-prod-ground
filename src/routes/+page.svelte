@@ -87,6 +87,8 @@
 			dataSource={gitData}
 			pageSettings={{ pageNumber: 10 }}
 			enableSearch
+			enablePdfExport
+			pdfName="win-data"
 		/>
 	{/if}
 </div>

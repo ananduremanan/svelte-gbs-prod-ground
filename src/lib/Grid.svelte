@@ -46,7 +46,7 @@
 	// Its goal is to guarantee that the data source updates with parent,
 	// especially in situations when the parent component's asynchronous data fetching takes place.
 	function afterUpdateFunctions() {
-		totalPages = Math.ceil(dataSource.length / pageSettings.pageNumber);
+		totalPages = Math.ceil(workingDataSource.length / pageSettings.pageNumber);
 		if (!isFilterApplied) {
 			workingDataSource = [...dataSource];
 		}
