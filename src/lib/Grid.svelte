@@ -38,6 +38,7 @@
 	let workingDataSource: any[] = [...dataSource];
 	let searchParam: string | number;
 	let isFilterApplied: boolean = false;
+	let isSearchApplied: boolean = false;
 
 	// Total Number Of Pages Calculation
 	let totalPages = 0;
@@ -47,7 +48,7 @@
 	// especially in situations when the parent component's asynchronous data fetching takes place.
 	function afterUpdateFunctions() {
 		totalPages = Math.ceil(workingDataSource.length / pageSettings.pageNumber);
-		if (!isFilterApplied) {
+		if (!isFilterApplied && !isSearchApplied) {
 			workingDataSource = [...dataSource];
 		}
 	}
@@ -61,7 +62,8 @@
 	// Function to reset datasource when search cleared
 	function resetSearch(event: any) {
 		if (event.target.value === '') {
-			dataSource = workingDataSource;
+			isSearchApplied = false;
+			workingDataSource = dataSource;
 			goToPage(0);
 		}
 	}
@@ -69,6 +71,7 @@
 	// Function For Serching the Grid
 	function handleSearch(searchParam: any) {
 		if (!lazy) {
+			isSearchApplied = true;
 			workingDataSource = dataSource.filter((item: any) => {
 				for (const key in item) {
 					if (item[key].toString().toLowerCase().includes(searchParam.toLowerCase())) {
