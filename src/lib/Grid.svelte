@@ -39,14 +39,11 @@
 	let searchParam: string | number;
 	let isFilterApplied: boolean = false;
 	let isSearchApplied: boolean = false;
-
-	// Total Number Of Pages Calculation
 	let totalPages = 0;
 
-	// This method is essential for carrying out activities after the component is mounted onto the DOM.
-	// Its goal is to guarantee that the data source updates with parent,
-	// especially in situations when the parent component's asynchronous data fetching takes place.
+	// Function to handle Asynchronous data fetching on parent.
 	function afterUpdateFunctions() {
+		// Total Number Of Pages Calculation
 		totalPages = Math.ceil(workingDataSource.length / pageSettings.pageNumber);
 		if (!isFilterApplied && !isSearchApplied) {
 			workingDataSource = [...dataSource];
