@@ -34,7 +34,7 @@
 			template: ImageAction,
 			showTemplateInExport: true
 		},
-		{ field: 'userName', width: '100' },
+		{ field: 'userName', width: '100', filter: true },
 		{ field: 'repo', width: '100', textAlign: 'Right' },
 		{ field: 'repoUrl', headerText: 'Repo URL', width: '200' },
 		{ field: 'Grid Action', template: ActionButton }

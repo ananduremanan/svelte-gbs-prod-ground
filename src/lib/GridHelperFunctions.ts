@@ -4,12 +4,8 @@ import 'jspdf-autotable';
 
 let activeFilterArray: Object[] = [];
 
-export function handleApplyFilterHelper(
-	event: any,
-	columns: any[],
-	dataSource: any[],
-	fullDataSource: any[]
-) {
+export function handleApplyFilterHelper(event: any, columns: any[], dataSource: any[]) {
+	let workingDataSource: any[] = [...dataSource];
 	let filterValue = event.detail.filterValue.toLowerCase();
 	let filterCondition = event.detail.selected;
 	let filterColumn = event.detail.columnHeader;
@@ -29,10 +25,8 @@ export function handleApplyFilterHelper(
 	});
 
 	// Apply all active filters
-	dataSource = fullDataSource;
-	fullDataSource = [...dataSource];
 	activeFilterArray.forEach((filter: any) => {
-		dataSource = dataSource.filter((item: any) => {
+		workingDataSource = dataSource.filter((item: any) => {
 			let columnValue = item[filter.filterColumn].toString().toLowerCase();
 			switch (filter.filterCondition) {
 				case 'contains':
@@ -45,17 +39,14 @@ export function handleApplyFilterHelper(
 		});
 	});
 
-	return { columns, dataSource, fullDataSource };
+	return { columns, workingDataSource };
 }
 
 // Function For Clearing the Filter
-export function clearFilterHelper(
-	event: any,
-	columns: any[],
-	dataSource: any[],
-	fullDataSource: any[]
-) {
+export function clearFilterHelper(event: any, columns: any[], dataSource: any[]) {
+	let workingDataSource = [...dataSource];
 	let filterColumn = event.detail.columnHeader;
+	let hasActiveFilters = activeFilterArray.length > 0;
 
 	activeFilterArray = activeFilterArray.filter(
 		(filter: any) => filter.filterColumn !== filterColumn
@@ -70,9 +61,8 @@ export function clearFilterHelper(
 	});
 
 	// Reapply all active filters
-	dataSource = fullDataSource;
 	activeFilterArray.forEach((filter: any) => {
-		dataSource = dataSource.filter((item: any) => {
+		workingDataSource = dataSource.filter((item: any) => {
 			let columnValue = item[filter.filterColumn].toString().toLowerCase();
 			switch (filter.filterCondition) {
 				case 'contains':
@@ -85,7 +75,7 @@ export function clearFilterHelper(
 		});
 	});
 
-	return { columns, dataSource };
+	return { columns, workingDataSource, hasActiveFilters };
 }
 
 export function exportToExcelHelper(dataSource: any[], columns: any[], excelName: string) {
