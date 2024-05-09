@@ -1,94 +1,27 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { countries } from '$lib/countries';
-	// import Grid from '@grampro/svelte-block/Grid.svelte';
-	import Select from '@grampro/svelte-block/Select.svelte';
-	// import MultiSelect from '@grampro/svelte-block/MultiSelect.svelte';
-	import { dataSource } from '$lib/dataSource';
-	import ActionButton from '$lib/ActionButton.svelte';
-	import ImageAction from '$lib/ImageAction.svelte';
+	import Button from "$lib/button/Button.svelte";
+	import Modal from "$lib/modal/Modal.svelte";
 
-	import Button from '$lib/button/Button.svelte';
-	// import SelectRestructured from '$lib/dropdown/SelectRestructured.svelte';
-	import MultiSelect from '$lib/multiselect/MultiSelect.svelte';
-	import Grid from '$lib/Grid.svelte';
-	import { Img, Spinner } from 'flowbite-svelte';
-
-	const columns = [
-		{ field: 'OrderID', width: '200', textAlign: 'Right', filter: true },
-		{ field: 'CustomerID', width: '100' },
-		{ field: 'EmployeeID', width: '100', textAlign: 'Right' },
-		{ field: 'Freight', headerText: 'Freight', width: '200' },
-		{ field: 'ShipCountry', width: '200', filter: true },
-		{ field: 'ShipAddress', width: '150' },
-		{ field: 'ShipPostalCode', width: '150' },
-		{ field: 'Grid Action', template: ActionButton }
-	];
-
-	const gitDataColumns: any[] = [
-		{ field: 'id', width: '200', textAlign: 'Right', filter: true },
-		{
-			field: 'imgUrl',
-			width: '200',
-			textAlign: 'Right',
-			template: ImageAction,
-			showTemplateInExport: true
-		},
-		{ field: 'userName', width: '100', filter: true },
-		{ field: 'repo', width: '100', textAlign: 'Right' },
-		{ field: 'repoUrl', headerText: 'Repo URL', width: '200' },
-		{ field: 'Grid Action', template: ActionButton }
-	];
-
-	let selected: any = undefined;
-
-	const getData = async () => {
-		let dataArray = [];
-		try {
-			const res = await fetch(
-				'https://raw.githubusercontent.com/json-iterator/test-data/master/large-file.json'
-			);
-			const data = await res.json();
-			if (data) {
-				dataArray = data.map((item: any) => {
-					return {
-						id: item.id,
-						userName: item.actor.login,
-						repo: item.repo.name,
-						repoUrl: item.repo.url,
-						imgUrl: item.actor.avatar_url
-					};
-				});
-			}
-
-			return dataArray;
-		} catch (error) {
-			console.error(error);
-		}
-	};
-
-	let gitData: any[] = [];
-
-	onMount(async () => {
-		gitData = await getData();
-	});
+	let showModal = false;
 </script>
 
-<div class="flex flex-col gap-4 px-20 py-8">
-	<div class="flex gap-2">
-		<Select items={countries} bind:selected />
-		<MultiSelect items={countries} placeholder="Select Multiple Values" enableSelectAll />
-		<Button>Submit</Button>
-	</div>
+<div>
+	<Button
+		on:click={() => {
+			showModal = !showModal;
+		}}>Submit</Button
+	>
 
-	{#if gitData}
-		<Grid
-			columns={gitDataColumns}
-			dataSource={gitData}
-			pageSettings={{ pageNumber: 10 }}
-			enableSearch
-			enablePdfExport
-			pdfName="win-data"
-		/>
-	{/if}
+	<Modal bind:showModal autoclose modalTitle="Disclaimer" classModalContent="">
+		<p class="text-xs">
+			The information provided on this website is for general informational purposes only. It is not
+			intended to be a substitute for professional advice, diagnosis, or treatment. Always seek the
+			advice of your physician or other qualified health provider with any questions you may have
+			regarding a medical condition. Never disregard professional medical advice or delay in seeking
+			it because of something you have read on this website.
+		</p>
+		<div>
+			<Button class="mt-2">Accept</Button>
+		</div>
+	</Modal>
 </div>
