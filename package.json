@@ -43,7 +43,8 @@
 	"type": "module",
 	"dependencies": {
 		"@grampro/svelte-block": "^0.0.13",
-		"bits-ui": "^0.21.6",
+		"@internationalized/date": "^3.5.3",
+		"bits-ui": "^0.21.7",
 		"clsx": "^2.1.1",
 		"cmdk-sv": "^0.0.17",
 		"jspdf": "^2.5.1",
