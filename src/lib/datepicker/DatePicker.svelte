@@ -5,7 +5,7 @@
 	export let value: any;
 	export let placeholder: string = 'Select Date';
 
-	let showCalender: any = false;
+	let showCalender: boolean = false;
 </script>
 
 <div class="flex flex-col justify-center items-center relative">
@@ -21,6 +21,13 @@
 		<CalenderIcon size="20" class="text-gray-300" /></button
 	>
 	{#if showCalender}
-		<Calendar bind:value class="absolute top-6" initialFocus />
+		<Calendar
+			bind:value
+			class="absolute top-6"
+			initialFocus
+			on:date_selected={() => {
+				showCalender = !showCalender;
+			}}
+		/>
 	{/if}
 </div>

@@ -2,10 +2,13 @@
 	import { Calendar as CalendarPrimitive } from 'bits-ui';
 	import * as Calendar from './index.js';
 	import { cn } from '$lib/utils.js';
+	import { createEventDispatcher } from 'svelte';
 
 	type $$Props = CalendarPrimitive.Props;
 
-	type $$Events = CalendarPrimitive.Events;
+	type $$Events = CalendarPrimitive.Events & { date_selected: CustomEvent<{ value: boolean }> };
+
+	const dispatch = createEventDispatcher();
 
 	export let value: $$Props['value'] = undefined;
 	export let placeholder: $$Props['placeholder'] = undefined;
@@ -51,7 +54,7 @@
 										{date}
 										month={month.value}
 										on:click={() => {
-											alert(123);
+											dispatch('date_selected', { value: true });
 										}}
 									/>
 								</Calendar.Cell>
