@@ -3,6 +3,6 @@
 	let value: any;
 </script>
 
-<div>
+<div class="flex justify-center items-center min-h-screen">
 	<DatePicker bind:value />
 </div>

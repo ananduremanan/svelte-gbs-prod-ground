@@ -1,30 +1,26 @@
 <script lang="ts">
-	import CalendarIcon from 'lucide-svelte/icons/calendar';
-	import { DateFormatter, type DateValue, getLocalTimeZone } from '@internationalized/date';
-	import { cn } from '$lib/utils.js';
-	import { Button } from '$lib/components/ui/button/index.js';
-	import { Calendar } from '$lib/components/ui/calendar/index.js';
-	import * as Popover from '$lib/components/ui/popover/index.js';
+	import Calendar from '$lib/components/ui/calendar/calendar.svelte';
+	import { Calendar as CalenderIcon } from 'lucide-svelte';
 
-	const df = new DateFormatter('en-US', {
-		dateStyle: 'long'
-	});
+	export let value: any;
+	export let placeholder: string = 'Select Date';
 
-	export let value: DateValue | undefined = undefined;
+	let showCalender: any = false;
 </script>
 
-<Popover.Root>
-	<Popover.Trigger asChild let:builder>
-		<Button
-			variant="outline"
-			class={cn('w-[280px] justify-start text-left font-normal', !value && 'text-muted-foreground')}
-			builders={[builder]}
-		>
-			<CalendarIcon class="mr-2 h-4 w-4" />
-			{value ? df.format(value.toDate(getLocalTimeZone())) : 'Pick a date'}
-		</Button>
-	</Popover.Trigger>
-	<Popover.Content class="w-auto p-0">
-		<Calendar bind:value initialFocus />
-	</Popover.Content>
-</Popover.Root>
+<div class="flex flex-col justify-center items-center relative">
+	<button
+		class="border px-2 py-1 rounded-lg w-[16rem] justify-between flex text-gray-400"
+		on:click={() => (showCalender = !showCalender)}
+	>
+		{#if value}
+			{value}
+		{:else}
+			{placeholder}
+		{/if}
+		<CalenderIcon size="20" class="text-gray-300" /></button
+	>
+	{#if showCalender}
+		<Calendar bind:value class="absolute top-6" initialFocus />
+	{/if}
+</div>
