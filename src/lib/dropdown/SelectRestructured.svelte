@@ -4,12 +4,18 @@
 	import X from 'lucide-svelte/icons/x';
 	import { SearchOutline } from 'flowbite-svelte-icons';
 	import Check from 'lucide-svelte/icons/check';
-	import { cn } from '$lib/utils.js';
+	import { twMerge } from 'tailwind-merge';
+	import { fade } from 'svelte/transition';
 
 	export let placeholder = 'Select a Value...';
 	export let items: any[];
 	export let selected: any = '';
 	export let lazy: boolean = false;
+	export let showSearch: boolean = true;
+	export let searchboxClass: string = 'p-1 flex rounded-md bg-transparent text-sm outline-none';
+	export let popUpClass: string =
+		'w-[200px] h-[200px] border px-2 rounded-lg mt-[1px] scrollbar bg-white z-50';
+	export let itemClass: string = 'text-left hover:bg-blue-100 gap-2 rounded-lg mt-1 text-sm ';
 
 	let showPopover = false;
 	let popoverTrigger: any;
@@ -79,35 +85,40 @@
 	<!-- Item List Popover -->
 	{#if showPopover}
 		<div
-			class="absolute w-[200px] h-[200px] border px-2 rounded-lg mt-[1px] overflow-y-auto scrollbar bg-white"
+			class={twMerge('absolute overflow-y-auto', popUpClass)}
 			bind:this={popoverTrigger}
+			transition:fade={{ duration: 100 }}
 		>
 			<!-- Search Handler -->
-			<div class="flex p-2 gap-1 items-center sticky top-0 bg-white border-b">
-				<SearchOutline size="sm" class="text-gray-400" />
-				<input
-					on:input={inputSearchHandler}
-					bind:this={searchRef}
-					type="text"
-					name="search"
-					id="search"
-					placeholder="Search a value"
-					class="p-1 flex w-full rounded-md bg-transparent text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
-				/>
-			</div>
+			{#if showSearch}
+				<div class="flex p-2 gap-1 items-center sticky top-0 bg-white border-b">
+					<SearchOutline size="sm" class="text-gray-400" />
+					<input
+						autocomplete="off"
+						on:input={inputSearchHandler}
+						bind:this={searchRef}
+						type="text"
+						name="search"
+						id="search"
+						placeholder="Search a value"
+						class={twMerge(searchboxClass, 'w-full')}
+						{...$$restProps}
+					/>
+				</div>
+			{/if}
 
 			<!-- Mapped Items -->
 			{#if items.length > 0}
 				{#each items as { value, label }}
 					<button
-						class="px-2 py-1 w-full text-left hover:bg-blue-100 gap-2 rounded-lg mt-1 text-sm flex items-center"
+						class={twMerge('flex items-center w-full px-2 py-1', itemClass)}
 						on:click={() => {
 							selected = value;
 							selectedDisplay = label;
 							showPopover = !showPopover;
 						}}
 					>
-						<Check class={cn('mr-2 h-4 w-4', selected !== value && 'text-transparent')} />
+						<Check class={twMerge('mr-2 h-4 w-4', selected !== value && 'text-transparent')} />
 						{label}</button
 					>
 				{/each}
