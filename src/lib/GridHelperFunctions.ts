@@ -33,6 +33,10 @@ export function handleApplyFilterHelper(event: any, columns: any[], dataSource: 
 					return columnValue.includes(filter.filterValue);
 				case 'equals':
 					return columnValue === filter.filterValue;
+				case 'starts_with':
+					return columnValue.startsWith(filter.filterValue);
+				case 'ends_with':
+					return columnValue.endsWith(filter.filterValue);
 				default:
 					return true;
 			}

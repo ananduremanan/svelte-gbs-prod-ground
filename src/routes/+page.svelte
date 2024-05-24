@@ -1,19 +1,21 @@
 <script>
-	import Select from '$lib/dropdown/SelectRestructured.svelte';
+	import Grid from '$lib/Grid2.0.svelte';
+	import { dataSource } from '$lib/dataSource';
 
-	export let countries = [
-		{ value: 'us', label: 'United States' },
-		{ value: 'fr', label: 'France' },
-		{ value: 'gb', label: 'United Kingdom' },
-		{ value: 'de', label: 'Germany' },
-		{ value: 'jp', label: 'Japan' },
-		{ value: 'au', label: 'Australia' },
-		{ value: 'cn', label: 'China' },
-		{ value: 'in', label: 'India' },
-		{ value: 'mx', label: 'Mexico' }
+	const columns = [
+		{ field: 'OrderID', width: '200', textAlign: 'Right' },
+		{ field: 'CustomerID', width: '100', filter: true },
+		{ field: 'EmployeeID', width: '100', textAlign: 'Right' },
+		{
+			field: 'Freight',
+			headerText: 'Frieght',
+			width: '200'
+		},
+		{ field: 'ShipCountry', width: '200' },
+		{ field: 'ShipAddress', width: '150' }
 	];
 </script>
 
-<div class="min-h-screen flex items-center justify-center">
-	<Select items={countries} />
+<div class="mx-8 mt-8">
+	<Grid {columns} {dataSource} pageSettings={{ pageNumber: 10 }} enableSearch />
 </div>

@@ -14,7 +14,6 @@
 		exportToExcelHelper,
 		exportToPDFHelper
 	} from './GridHelperFunctions';
-	import { Search } from 'flowbite-svelte';
 	import { onMount, afterUpdate } from 'svelte';
 	import { twMerge } from 'tailwind-merge';
 
@@ -173,12 +172,13 @@
 									{/if}
 									{#if enableSearch}
 										<div class="flex gap-1">
-											<Search
-												size="sm"
+											<input
+												type="search"
 												bind:value={searchParam}
 												on:input={resetSearch}
-												class="outline-none p-2 text-sm font-normal bg-gray-50"
-											></Search>
+												class="outline-none p-2 text-sm font-normal bg-gray-50 rounded-lg"
+												placeholder="Search"
+											/>
 											<button
 												class={twMerge(
 													'bg-white border rounded-lg text-black w-10 flex items-center justify-center',

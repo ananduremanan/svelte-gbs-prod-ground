@@ -14,7 +14,7 @@
 	export let showSearch: boolean = true;
 	export let searchboxClass: string = 'p-1 flex rounded-md bg-transparent text-sm outline-none';
 	export let popUpClass: string =
-		'w-[200px] h-[200px] border px-2 rounded-lg mt-[1px] scrollbar bg-white z-50';
+		'w-[200px] h-auto border px-2 rounded-lg mt-[1px] scrollbar bg-white z-50';
 	export let itemClass: string = 'text-left hover:bg-blue-100 gap-2 rounded-lg mt-1 text-sm ';
 
 	let showPopover = false;
