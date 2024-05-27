@@ -2,14 +2,6 @@
 https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899d24bc590215a6196435fa3 -->
 
 <script lang="ts">
-	import {
-		PlusOutline,
-		PenOutline,
-		TrashBinOutline,
-		FloppyDiskAltOutline,
-		ArrowRightToBracketOutline,
-		DotsVerticalOutline
-	} from 'flowbite-svelte-icons';
 	import AngleLeftOutline from '../assets/icons/AngleLeftOutline.svelte';
 	import AngleRightOutline from '../assets/icons/AngleRightOutline.svelte';
 	import FilterOutline from '../assets/icons/FilterOutline.svelte';
@@ -25,6 +17,7 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 	} from './GridHelperFunctions';
 	import { onMount, afterUpdate } from 'svelte';
 	import { twMerge } from 'tailwind-merge';
+	import EditingToolbar from './EditingToolbar.svelte';
 
 	interface PageSettingsProps {
 		pageNumber: number;
@@ -58,7 +51,7 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 	let totalPages = 0;
 	let gridClassContainer =
 		'flex flex-col min-w-screen border rounded-md overflow-hidden dark:text-white';
-	let showMobileEditToolbar: boolean = false;
+	let selectedRowIndex: any;
 
 	// Function to handle Asynchronous data fetching on parent.
 	function afterUpdateFunctions() {
@@ -159,6 +152,12 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 		currentPage = pageStart + page;
 	}
 	// Page Navigation Helper Methods Ends Here ***
+
+	// Under Production Don't Remove
+	// function handleCellEdit(event: any, rowIndex: any, field: any) {
+	// 	const updatedValue = event.target.value;
+	// 	workingDataSource[rowIndex][field] = updatedValue;
+	// }
 </script>
 
 <div class={twMerge(gridContainerClass, gridClassContainer)}>
@@ -169,48 +168,7 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 				<div class="min-w-full flex justify-between items-center">
 					<!-- Grid Editing Tool Box -->
 					{#if enableEditingBox}
-						<div class="max-sm:block flex flex-grow md:hidden ml-4 relative">
-							<button
-								on:click={() => {
-									showMobileEditToolbar = !showMobileEditToolbar;
-								}}
-							>
-								<DotsVerticalOutline size="sm" />
-							</button>
-							{#if showMobileEditToolbar}
-								<div class="absolute flex flex-col bg-white px-4 py-1 shadow-sm text-sm">
-									<ul>
-										<li class="flex items-center gap-2 mb-2"><PlusOutline size="sm" />Add</li>
-										<li class="flex items-center gap-2 mb-2"><PenOutline size="sm" />Edit</li>
-										<li class="flex items-center gap-2 mb-2">
-											<TrashBinOutline size="sm" />Delete
-										</li>
-										<li class="flex items-center gap-2 mb-2">
-											<FloppyDiskAltOutline size="sm" />Add
-										</li>
-									</ul>
-								</div>
-							{/if}
-						</div>
-						<ul class="flex px-2 py-1 flex-grow" class:show={enableEditingBox}>
-							<button
-								class="px-2 rounded-lg bg-white flex items-center text-sm hover:text-blue-400 max-sm:hidden"
-								><PlusOutline size="sm" />Add</button
-							>
-							<button
-								class="px-2 rounded-lg bg-white flex items-center text-sm hover:text-blue-400 max-sm:hidden"
-								><PenOutline size="sm" />Edit</button
-							><button
-								class="px-2 rounded-lg bg-white flex items-center text-sm hover:text-red-400 max-sm:hidden"
-								><TrashBinOutline size="sm" />Delete</button
-							><button
-								class="px-2 rounded-lg bg-white flex items-center text-sm hover:text-blue-400 max-sm:hidden"
-								><FloppyDiskAltOutline size="sm" />Update</button
-							><button
-								class="px-2 rounded-lg bg-white flex items-center text-sm hover:text-blue-400 max-sm:hidden"
-								><ArrowRightToBracketOutline size="sm" />Cancel</button
-							>
-						</ul>
+						<EditingToolbar />
 					{/if}
 
 					<!-- Utility Tools -->
@@ -302,13 +260,19 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 						<!-- Data From Datsource Shows Here -->
 						{#if workingDataSource.length > 0}
 							{#each workingDataSource.slice(currentPage * pageSettings.pageNumber, (currentPage + 1) * pageSettings.pageNumber) as rowData, rowIndex}
-								<tr class="hover:bg-gray-50">
+								<tr
+									class={`hover:bg-gray-50 ${selectedRowIndex === rowIndex ? 'bg-gray-50' : ''}`}
+									on:click={() => {
+										selectedRowIndex = rowIndex;
+									}}
+								>
 									{#each columns as column}
 										<td class={`border-b p-2 text-sm ${column.template ? '' : ''}`}>
 											{#if column.template}
 												<div class="flex">
 													<svelte:component this={column.template} {rowData} />
 												</div>
+												<!-- Under Production Don't Remove -->
 												<!-- {:else if column.editable}
 												<input
 													type="text"
