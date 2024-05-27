@@ -4,6 +4,11 @@ import 'jspdf-autotable';
 
 let activeFilterArray: Object[] = [];
 
+interface PDFExportOptions {
+	layout: 'portrait' | 'landscape';
+	paperSize: 'a3' | 'a4' | 'letter' | 'legal' | 'tabloid' | 'statement' | 'executive';
+}
+
 export function handleApplyFilterHelper(event: any, columns: any[], dataSource: any[]) {
 	let workingDataSource: any[] = [...dataSource];
 	let filterValue = event.detail.filterValue.toLowerCase();
@@ -98,8 +103,19 @@ export function exportToExcelHelper(dataSource: any[], columns: any[], excelName
 	XLSX.writeFile(wb, `${excelName}.xlsx`);
 }
 
-export function exportToPDFHelper(dataSource: any[], columns: any[], pdfName: string) {
-	const doc: any = new jsPDF();
+export function exportToPDFHelper(
+	dataSource: any[],
+	columns: any[],
+	pdfName: string,
+	pdfoptions?: PDFExportOptions
+) {
+	const { layout = 'portrait', paperSize = 'a4' }: any = pdfoptions;
+
+	const doc: any = new jsPDF({
+		orientation: layout,
+		unit: 'mm',
+		format: paperSize
+	});
 	// This will remove the columns with template.
 	const printableColumns = columns.filter((column) => !column.template);
 
