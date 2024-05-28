@@ -152,12 +152,6 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 		currentPage = pageStart + page;
 	}
 	// Page Navigation Helper Methods Ends Here ***
-
-	// Under Production Don't Remove
-	// function handleCellEdit(event: any, rowIndex: any, field: any) {
-	// 	const updatedValue = event.target.value;
-	// 	workingDataSource[rowIndex][field] = updatedValue;
-	// }
 </script>
 
 <div class={twMerge(gridContainerClass, gridClassContainer)}>
@@ -166,11 +160,6 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 			<!-- Grid Header Options -->
 			{#if enableSearch || enableExcelExport || enablePdfExport || enableEditingBox}
 				<div class="min-w-full flex justify-between items-center">
-					<!-- Grid Editing Tool Box -->
-					{#if enableEditingBox}
-						<EditingToolbar />
-					{/if}
-
 					<!-- Utility Tools -->
 					<div
 						class="px-1 py-3 flex-grow"
@@ -221,7 +210,10 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 					<thead>
 						<tr>
 							{#each columns as columnHeader}
-								<th class="border-b border-t bg-gray-50 px-2 py-4">
+								<th
+									class="border-b border-t bg-gray-50 px-2 py-4"
+									style="width: {columnHeader.width ? `${columnHeader.width}px` : 'auto'};"
+								>
 									<div class="flex items-center gap-2 text-sm">
 										{#if columnHeader.headerText}
 											{columnHeader.headerText}
@@ -262,19 +254,14 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 							{#each workingDataSource.slice(currentPage * pageSettings.pageNumber, (currentPage + 1) * pageSettings.pageNumber) as rowData, rowIndex}
 								<tr class={`hover:bg-gray-50 ${selectedRowIndex === rowIndex ? 'bg-gray-50' : ''}`}>
 									{#each columns as column}
-										<td class={`border-b p-2 text-sm ${column.template ? '' : ''}`}>
+										<td
+											class={`border-b p-2 text-sm ${column.template ? '' : ''}`}
+											style="width: {column.width ? `${column.width}px` : 'auto'};"
+										>
 											{#if column.template}
 												<div class="flex">
 													<svelte:component this={column.template} {rowData} />
 												</div>
-												<!-- Under Production Don't Remove -->
-												<!-- {:else if column.editable}
-												<input
-													type="text"
-													class="outline-none focus:border-b focus:border-blue-400"
-													value={rowData[column.field]}
-													on:input={(event) => handleCellEdit(event, rowIndex, column.field)}
-												/> -->
 											{:else}
 												{rowData[column.field]}
 											{/if}

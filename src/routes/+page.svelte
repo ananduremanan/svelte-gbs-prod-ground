@@ -3,15 +3,15 @@
 	import { dataSource } from '$lib/dataSource';
 
 	const columns = [
-		{ field: 'OrderID', width: '200', textAlign: 'Right' },
-		{ field: 'ShipCountry', width: '200', editable: true },
-		{ field: 'ShipAddress', width: '150' },
-		{ field: 'ShipName', width: '150' },
-		{ field: 'ShipCity', width: '150' },
-		{ field: 'ShipRegion', width: '150' },
-		{ field: 'ShipPostalCode', width: '150' },
-		{ field: 'OrderDate', width: '150' },
-		{ field: 'Verified', width: '150' }
+		{ field: 'OrderID', textAlign: 'Right' },
+		{ field: 'ShipCountry', editable: true },
+		{ field: 'ShipAddress' },
+		{ field: 'ShipName' },
+		{ field: 'ShipCity' },
+		{ field: 'ShipRegion' },
+		{ field: 'ShipPostalCode' },
+		{ field: 'OrderDate' },
+		{ field: 'Verified' }
 	];
 </script>
 
