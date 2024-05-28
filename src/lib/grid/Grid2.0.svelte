@@ -260,12 +260,7 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 						<!-- Data From Datsource Shows Here -->
 						{#if workingDataSource.length > 0}
 							{#each workingDataSource.slice(currentPage * pageSettings.pageNumber, (currentPage + 1) * pageSettings.pageNumber) as rowData, rowIndex}
-								<tr
-									class={`hover:bg-gray-50 ${selectedRowIndex === rowIndex ? 'bg-gray-50' : ''}`}
-									on:click={() => {
-										selectedRowIndex = rowIndex;
-									}}
-								>
+								<tr class={`hover:bg-gray-50 ${selectedRowIndex === rowIndex ? 'bg-gray-50' : ''}`}>
 									{#each columns as column}
 										<td class={`border-b p-2 text-sm ${column.template ? '' : ''}`}>
 											{#if column.template}
@@ -287,9 +282,6 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 									{/each}
 								</tr>
 							{/each}
-							<tr>
-								<td colspan={columns.length} class=""> </td>
-							</tr>
 						{:else}
 							<!-- Shows if workingDataSource array is empty -->
 							<tr>

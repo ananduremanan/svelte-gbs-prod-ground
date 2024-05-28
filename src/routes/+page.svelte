@@ -21,7 +21,6 @@
 		{dataSource}
 		pageSettings={{ pageNumber: 10 }}
 		pdfOptions={{ layout: 'portrait', paperSize: 'a3' }}
-		enableEditingBox
 		enableSearch
 		enablePdfExport
 		enableExcelExport
