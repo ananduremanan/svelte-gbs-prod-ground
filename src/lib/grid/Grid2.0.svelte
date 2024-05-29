@@ -158,46 +158,6 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 	// Page Navigation Helper Methods Ends Here ***
 
 	// Grid Edit Action Handler Functions
-	function addNewEntry() {
-		if (Object.keys(newEntry).length > 0) {
-			dataSource = [newEntry, ...workingDataSource];
-			newEntry = {};
-		}
-	}
-
-	// function handleEditAction(event: any) {
-	// 	// const { mode } = event.detail;
-
-	// 	// switch (mode) {
-	// 	// 	case 'add':
-	// 	// 		isEditModeActive = true;
-	// 	// 		actionMode = mode;
-	// 	// 		goToFirstPage();
-	// 	// 		break;
-	// 	// 	case 'cancel':
-	// 	// 		resetEditMode();
-	// 	// 		break;
-	// 	// 	case 'update':
-	// 	// 		addNewEntry();
-	// 	// 		resetEditMode();
-	// 	// 		break;
-	// 	// 	default:
-	// 	// 		break;
-	// 	// }
-
-	// 	// function resetEditMode() {
-	// 	// 	isEditModeActive = false;
-	// 	// 	actionMode = '';
-	// 	// 	newEntry = {};
-	// 	// }
-	// 	const {
-	// 		dataSourceUpdate: dataSource,
-	// 		isEditModeActive: isEditModeActiveUpdate,
-	// 		actionMode: actionModeUpdate,
-	// 		newEntry: newEntryUpdate
-	// 	} = handleEditActionHelper(event, isEditModeActive, actionMode, newEntry, workingDataSource);
-	// }
-
 	function handleEditAction(event: any) {
 		const { dataSourceUpdate, isEditModeActiveUpdate, actionModeUpdate, newEntryUpdate } =
 			handleEditActionHelper(event, isEditModeActive, actionMode, newEntry, workingDataSource);
