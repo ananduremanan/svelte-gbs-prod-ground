@@ -3,7 +3,7 @@
 	import { dataSource } from '$lib/dataSource';
 
 	const columns = [
-		{ field: 'OrderID', textAlign: 'Right', type: 'number', filter: true },
+		{ field: 'OrderID', textAlign: 'Right', type: 'number', filter: true, isPrimary: true },
 		{ field: 'ShipCountry', editable: true },
 		{ field: 'ShipAddress' },
 		{ field: 'ShipName' },

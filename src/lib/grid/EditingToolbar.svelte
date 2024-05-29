@@ -1,12 +1,10 @@
 <script lang="ts">
-	import {
-		ArrowRightToBracketOutline,
-		DotsVerticalOutline,
-		FloppyDiskAltOutline,
-		PenOutline,
-		PlusOutline,
-		TrashBinOutline
-	} from 'flowbite-svelte-icons';
+	import ArrowRightToBracketOutline from '../assets/icons/ArrowRightToBracketOutline.svelte';
+	import DotsVerticalOutline from '../assets/icons/DotsVerticalOutline.svelte';
+	import FloppyDiskAltOutline from '../assets/icons/FloppyDiskAltOutline.svelte';
+	import PenOutline from '../assets/icons/PenOutline.svelte';
+	import PlusOutline from '../assets/icons/PlusOutline.svelte';
+	import TrashBinOutline from '../assets/icons/TrashBinOutline.svelte';
 	import { createEventDispatcher } from 'svelte';
 
 	const dispatch = createEventDispatcher();
@@ -24,17 +22,32 @@
 	</button>
 	{#if showMobileEditToolbar}
 		<div class="fixed flex flex-col bg-white px-4 py-1 shadow-sm text-sm">
-			<button class="flex items-center gap-2 mb-2"><PlusOutline size="sm" />Add</button>
+			<button
+				class="flex items-center gap-2 mb-2"
+				on:click={() => {
+					dispatch('edit', { mode: 'add' });
+					showMobileEditToolbar = !showMobileEditToolbar;
+					isEditModeActive = !isEditModeActive;
+				}}><PlusOutline size="sm" />Add</button
+			>
 			<button class="flex items-center gap-2 mb-2"><PenOutline size="sm" />Edit</button>
 			<button class="flex items-center gap-2 mb-2">
 				<TrashBinOutline size="sm" />Delete
 			</button>
-			<button class="flex items-center gap-2 mb-2">
+			<button
+				class={`flex items-center gap-2 mb-2 ${!isEditModeActive ? 'text-gray-500' : ''}`}
+				disabled={!isEditModeActive}
+				on:click={() => {
+					dispatch('edit', { mode: 'update' });
+					showMobileEditToolbar = !showMobileEditToolbar;
+				}}
+			>
 				<FloppyDiskAltOutline size="sm" />Update
 			</button>
 			<button
 				class="flex items-center gap-2 mb-2"
 				on:click={() => {
+					dispatch('edit', { mode: 'cancel' });
 					showMobileEditToolbar = !showMobileEditToolbar;
 				}}
 			>

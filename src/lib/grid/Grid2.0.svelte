@@ -160,7 +160,14 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 	// Grid Edit Action Handler Functions
 	function handleEditAction(event: any) {
 		const { dataSourceUpdate, isEditModeActiveUpdate, actionModeUpdate, newEntryUpdate } =
-			handleEditActionHelper(event, isEditModeActive, actionMode, newEntry, workingDataSource);
+			handleEditActionHelper(
+				event,
+				isEditModeActive,
+				actionMode,
+				newEntry,
+				workingDataSource,
+				goToFirstPage
+			);
 
 		dataSource = dataSourceUpdate;
 		isEditModeActive = isEditModeActiveUpdate;

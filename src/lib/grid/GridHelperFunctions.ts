@@ -141,13 +141,14 @@ export function handleEditActionHelper(
 	isEditModeActive: boolean,
 	actionMode: string,
 	newEntry: any,
-	workingDataSource: any[]
+	workingDataSource: any[],
+	goToFirstPage: () => void
 ) {
 	const { mode } = e.detail;
 	let dataSourceUpdate = [...workingDataSource];
 	let isEditModeActiveUpdate: boolean = isEditModeActive;
 	let actionModeUpdate: string = actionMode;
-	let newEntryUpdate: any = { ...newEntry }; // Ensure newEntryUpdate is a copy
+	let newEntryUpdate: any = { ...newEntry };
 
 	function resetEditMode() {
 		isEditModeActiveUpdate = false;
@@ -166,6 +167,7 @@ export function handleEditActionHelper(
 		case 'add':
 			isEditModeActiveUpdate = true;
 			actionModeUpdate = mode;
+			goToFirstPage();
 			break;
 		case 'cancel':
 			resetEditMode();
