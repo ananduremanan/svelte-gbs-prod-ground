@@ -11,6 +11,7 @@
 
 	const dispatch = createEventDispatcher();
 	let showMobileEditToolbar: boolean = false;
+	export let isEditModeActive: boolean;
 </script>
 
 <div class="sm:block flex flex-grow md:hidden ml-4 relative">
@@ -43,24 +44,36 @@
 	{/if}
 </div>
 <div class="px-2 py-1 flex-grow hidden md:flex">
-	<button class="px-2 rounded-lg bg-white flex items-center text-sm hover:text-blue-400"
-		><PlusOutline size="sm" />Add</button
+	<button
+		class="px-2 rounded-lg bg-white flex items-center text-sm hover:text-blue-400"
+		on:click={() => {
+			dispatch('edit', { mode: 'add' });
+			isEditModeActive = !isEditModeActive;
+		}}><PlusOutline size="sm" />Add</button
 	>
 	<button class="px-2 rounded-lg bg-white flex items-center text-sm hover:text-blue-400"
 		><PenOutline
 			size="sm"
 			on:click={() => {
-				dispatch('edit', { edit: true });
+				dispatch('edit', { mode: 'edit' });
 			}}
 		/>Edit</button
 	>
 	<button class="px-2 rounded-lg bg-white flex items-center text-sm hover:text-red-400"
 		><TrashBinOutline size="sm" />Delete</button
 	>
-	<button class="px-2 rounded-lg bg-white flex items-center text-sm hover:text-blue-400"
-		><FloppyDiskAltOutline size="sm" />Update</button
+	<button
+		class={`px-2 rounded-lg bg-white flex items-center text-sm ${!isEditModeActive ? 'text-gray-500' : 'hover:text-blue-400'}`}
+		on:click={() => {
+			dispatch('edit', { mode: 'update' });
+		}}
+		disabled={!isEditModeActive}><FloppyDiskAltOutline size="sm" />Update</button
 	>
-	<button class="px-2 rounded-lg bg-white flex items-center text-sm hover:text-blue-400"
-		><ArrowRightToBracketOutline size="sm" />Cancel</button
+	<button
+		class={`px-2 rounded-lg bg-white flex items-center text-sm ${!isEditModeActive ? 'text-gray-500' : 'hover:text-blue-400'}`}
+		on:click={() => {
+			dispatch('edit', { mode: 'cancel' });
+		}}
+		disabled={!isEditModeActive}><ArrowRightToBracketOutline size="sm" />Cancel</button
 	>
 </div>

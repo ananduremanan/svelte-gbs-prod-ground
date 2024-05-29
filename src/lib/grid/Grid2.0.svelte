@@ -13,7 +13,8 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 		handleApplyFilterHelper,
 		clearFilterHelper,
 		exportToExcelHelper,
-		exportToPDFHelper
+		exportToPDFHelper,
+		handleEditActionHelper
 	} from './GridHelperFunctions';
 	import { onMount, afterUpdate } from 'svelte';
 	import { twMerge } from 'tailwind-merge';
@@ -52,6 +53,9 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 	let gridClassContainer =
 		'flex flex-col min-w-screen border rounded-md overflow-hidden dark:text-white';
 	let selectedRowIndex: any;
+	let actionMode: string = '';
+	let newEntry: any = {};
+	let isEditModeActive: boolean = false;
 
 	// Function to handle Asynchronous data fetching on parent.
 	function afterUpdateFunctions() {
@@ -152,6 +156,67 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 		currentPage = pageStart + page;
 	}
 	// Page Navigation Helper Methods Ends Here ***
+
+	// Grid Edit Action Handler Functions
+	function addNewEntry() {
+		if (Object.keys(newEntry).length > 0) {
+			dataSource = [newEntry, ...workingDataSource];
+			newEntry = {};
+		}
+	}
+
+	// function handleEditAction(event: any) {
+	// 	// const { mode } = event.detail;
+
+	// 	// switch (mode) {
+	// 	// 	case 'add':
+	// 	// 		isEditModeActive = true;
+	// 	// 		actionMode = mode;
+	// 	// 		goToFirstPage();
+	// 	// 		break;
+	// 	// 	case 'cancel':
+	// 	// 		resetEditMode();
+	// 	// 		break;
+	// 	// 	case 'update':
+	// 	// 		addNewEntry();
+	// 	// 		resetEditMode();
+	// 	// 		break;
+	// 	// 	default:
+	// 	// 		break;
+	// 	// }
+
+	// 	// function resetEditMode() {
+	// 	// 	isEditModeActive = false;
+	// 	// 	actionMode = '';
+	// 	// 	newEntry = {};
+	// 	// }
+	// 	const {
+	// 		dataSourceUpdate: dataSource,
+	// 		isEditModeActive: isEditModeActiveUpdate,
+	// 		actionMode: actionModeUpdate,
+	// 		newEntry: newEntryUpdate
+	// 	} = handleEditActionHelper(event, isEditModeActive, actionMode, newEntry, workingDataSource);
+	// }
+
+	function handleEditAction(event: any) {
+		const { dataSourceUpdate, isEditModeActiveUpdate, actionModeUpdate, newEntryUpdate } =
+			handleEditActionHelper(event, isEditModeActive, actionMode, newEntry, workingDataSource);
+
+		dataSource = dataSourceUpdate;
+		isEditModeActive = isEditModeActiveUpdate;
+		actionMode = actionModeUpdate;
+		newEntry = newEntryUpdate;
+	}
+
+	function handleInputChange(event: any, field: any, type: string) {
+		let value = event.target.value;
+		if (type === 'number') {
+			value = parseInt(value);
+		} else if (type === 'boolean') {
+			value = event.target.checked;
+		}
+		newEntry[field] = value;
+	}
 </script>
 
 <div class={twMerge(gridContainerClass, gridClassContainer)}>
@@ -160,6 +225,10 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 			<!-- Grid Header Options -->
 			{#if enableSearch || enableExcelExport || enablePdfExport || enableEditingBox}
 				<div class="min-w-full flex justify-between items-center">
+					<!-- Grid Editing Tool Box -->
+					{#if enableEditingBox}
+						<EditingToolbar on:edit={handleEditAction} {isEditModeActive} />
+					{/if}
 					<!-- Utility Tools -->
 					<div
 						class="px-1 py-3 flex-grow"
@@ -247,6 +316,31 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 								</th>
 							{/each}
 						</tr>
+
+						{#if actionMode === 'add'}
+							<tr>
+								{#each columns as columnHeader}
+									<td class="border-b px-2 py-2">
+										{#if columnHeader.type === 'boolean'}
+											<input
+												type="checkbox"
+												class="border p-1"
+												on:change={(event) =>
+													handleInputChange(event, columnHeader.field, columnHeader.type)}
+											/>
+										{:else}
+											<input
+												class="border p-1 w-full rounded-lg outline-none"
+												on:input={(event) =>
+													handleInputChange(event, columnHeader.field, columnHeader.type)}
+												placeholder={`Enter ${columnHeader.field}`}
+												type={columnHeader.type ? columnHeader.type : 'text'}
+											/>
+										{/if}
+									</td>
+								{/each}
+							</tr>
+						{/if}
 					</thead>
 					<tbody>
 						<!-- Data From Datsource Shows Here -->

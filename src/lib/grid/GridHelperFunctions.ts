@@ -135,3 +135,48 @@ export function exportToPDFHelper(
 
 	doc.save(`${pdfName}.pdf`);
 }
+
+export function handleEditActionHelper(
+	e: any,
+	isEditModeActive: boolean,
+	actionMode: string,
+	newEntry: any,
+	workingDataSource: any[]
+) {
+	const { mode } = e.detail;
+	let dataSourceUpdate = [...workingDataSource];
+	let isEditModeActiveUpdate: boolean = isEditModeActive;
+	let actionModeUpdate: string = actionMode;
+	let newEntryUpdate: any = { ...newEntry }; // Ensure newEntryUpdate is a copy
+
+	function resetEditMode() {
+		isEditModeActiveUpdate = false;
+		actionModeUpdate = '';
+		newEntryUpdate = {};
+	}
+
+	function addNewEntry() {
+		if (Object.keys(newEntryUpdate).length > 0) {
+			dataSourceUpdate = [newEntryUpdate, ...workingDataSource];
+			newEntryUpdate = {};
+		}
+	}
+
+	switch (mode) {
+		case 'add':
+			isEditModeActiveUpdate = true;
+			actionModeUpdate = mode;
+			break;
+		case 'cancel':
+			resetEditMode();
+			break;
+		case 'update':
+			addNewEntry();
+			resetEditMode();
+			break;
+		default:
+			break;
+	}
+
+	return { dataSourceUpdate, isEditModeActiveUpdate, actionModeUpdate, newEntryUpdate };
+}
