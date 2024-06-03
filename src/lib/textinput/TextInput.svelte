@@ -1,8 +1,4 @@
 <script lang="ts">
-	export let type: string = 'text';
-	export let placeholder: string = 'Type Something';
-	export let pattern: string = '';
-	export let id: string = '';
 	export let value: any = '';
 	export let OTPFeild: boolean = false;
 	export let OTPValue: string = '';
@@ -36,13 +32,12 @@
 
 {#if !OTPFeild}
 	<div class="text-input-container">
-		<input {id} {type} {placeholder} class={defaultClass} {...$$restProps} {pattern} {value} />
+		<input class={defaultClass} {...$$restProps} bind:value />
 	</div>
 {:else}
 	<div class="otp-container">
 		{#each Array(OTPLength) as _, index (index)}
 			<input
-				{id}
 				type="text"
 				maxlength="1"
 				pattern="[0-9]*"

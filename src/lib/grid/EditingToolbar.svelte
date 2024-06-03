@@ -61,7 +61,7 @@
 		class="px-2 rounded-lg bg-white flex items-center text-sm hover:text-blue-400"
 		on:click={() => {
 			dispatch('edit', { mode: 'add' });
-			isEditModeActive = !isEditModeActive;
+			isEditModeActive = true;
 		}}><PlusOutline size="sm" />Add</button
 	>
 	<button class="px-2 rounded-lg bg-white flex items-center text-sm hover:text-blue-400"
