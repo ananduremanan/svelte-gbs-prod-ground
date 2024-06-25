@@ -1,107 +1,75 @@
 <script lang="ts">
-	import Grid from '$lib/grid/Grid2.0.svelte';
-	import TextInput from '$lib/textinput/TextInput.svelte';
+	import { onMount } from 'svelte';
+	import Grid2 from '$lib/grid/Grid2.0.svelte';
 	import Button from '$lib/button/Button.svelte';
-	import Modal from '$lib/modal/Modal.svelte';
-	import Select from '$lib/dropdown/SelectRestructured.svelte';
-	import { columns, items } from '../utils/componentData';
-	import { addToast } from '$lib/toast/store';
-	import Action from '$lib/template/Action.svelte';
-	import Loading from '$lib/loading/Loading.svelte';
+	import Input from '$lib/Input.svelte';
 
-	let dataSource: any[] = [];
-	let showPopup = false;
-	let blockData = {
-		blockType: '',
-		label: '',
-		dependentBlock: '',
-		orderNumber: ''
-	};
+	let gridRef: any;
+	let isFetching = false;
 
-	function addToList() {
-		dataSource = [...dataSource, { ...blockData }];
-		blockData = {
-			blockType: '',
-			label: '',
-			dependentBlock: '',
-			orderNumber: ''
-		};
-		showPopup = false;
+	function clickInstance() {
+		if (gridRef) {
+			gridRef.goToPage(2);
+		}
 	}
 
-	function cancelAdd() {
-		blockData = {
-			blockType: '',
-			label: '',
-			dependentBlock: '',
-			orderNumber: ''
-		};
-		showPopup = false;
-	}
-
-	let toastSettings = {
-		type: 'custom',
-		dismissible: false,
-		timeout: 3000,
-		component: Action
+	const gitDataColumns = [
+		{ field: 'id', width: '200', textAlign: 'Right', filter: true },
+		{
+			field: 'imgUrl',
+			width: '200',
+			textAlign: 'Right',
+			showTemplateInExport: true
+		},
+		{ field: 'userName', width: '100', filter: true },
+		{ field: 'repo', width: '100', textAlign: 'Right' },
+		{ field: 'repoUrl', headerText: 'Repo URL', width: '200' },
+		{ field: 'remarks', headerText: 'Remarks', width: '200', template: Input, mandatory: true }
+	];
+	const getData = async () => {
+		let dataArray = [];
+		try {
+			isFetching = true;
+			const res = await fetch(
+				'https://raw.githubusercontent.com/json-iterator/test-data/master/large-file.json'
+			);
+			const data = await res.json();
+			if (data) {
+				dataArray = data.map((item: any) => {
+					return {
+						id: item.id,
+						userName: item.actor.login,
+						repo: item.repo.name,
+						repoUrl: item.repo.url,
+						imgUrl: item.actor.avatar_url
+					};
+				});
+			}
+			return dataArray;
+		} catch (error) {
+			console.error(error);
+		} finally {
+			isFetching = false;
+		}
 	};
+	let gitData: any = [];
+	onMount(async () => {
+		gitData = await getData();
+	});
 </script>
 
-<div class="p-20">
-	<div class="text-lg">Create Request Block</div>
-	<div class="flex justify-between mt-8">
-		<div>
-			<TextInput placeholder="Enter Form Name" id="form_name" />
-		</div>
-		<div>
-			<Button class="bg-blue-900 rounded-none" on:click={() => addToast(toastSettings)}
-				>Show Preview</Button
-			>
-			<Button
-				class="bg-green-600 rounded-none"
-				on:click={() => {
-					showPopup = !showPopup;
-				}}>Add New Block</Button
-			>
-			<Button class="bg-blue-900 rounded-none">Save</Button>
-		</div>
+<div class="flex flex-col gap-4 px-20 py-8">
+	<div>
+		<Button on:click={clickInstance} outline class="hover:bg-black">Go To Grid Page 3</Button>
 	</div>
-	<div class="mt-8">
-		<Grid {dataSource} {columns} pageSettings={{ pageNumber: 10 }} enableSearch />
-	</div>
-	<Loading type="stroke" />
+	<Grid2
+		columns={gitDataColumns}
+		dataSource={gitData}
+		pageSettings={{ pageNumber: 10 }}
+		enableSearch
+		enablePdfExport
+		pdfName="win-data"
+		bind:this={gridRef}
+		{isFetching}
+	/>
 </div>
-
-<Modal bind:showModal={showPopup} modalTitle="Add New Block" autoclose>
-	<div class="grid grid-cols-2 gap-2">
-		<div>Select Your Block:</div>
-		<div>
-			<Select {items} bind:selected={blockData.blockType} id="blocks" />
-		</div>
-		<div>Enter Label:</div>
-		<div>
-			<TextInput id="label" placeholder="Eg: Enter Your Name Here" bind:value={blockData.label} />
-		</div>
-		<div>Select Dependent Block:</div>
-		<div>
-			<TextInput
-				id="dependentblock"
-				placeholder="Eg: Enter Your Name Here"
-				bind:value={blockData.dependentBlock}
-			/>
-		</div>
-		<div>Order Number:</div>
-		<div>
-			<TextInput
-				id="order_number"
-				placeholder="Eg: Enter Your Order Number Here"
-				bind:value={blockData.orderNumber}
-			/>
-		</div>
-		<div></div>
-		<div>
-			<Button on:click={addToList}>Add</Button>
-			<Button on:click={cancelAdd}>Cancel</Button>
-		</div>
-	</div>
-</Modal>

@@ -41,11 +41,12 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 	export let gridPaginationButtonClass: string = '';
 	export let pdfOptions: any = {};
 	export let enableEditingBox: boolean = false;
+	export let isFetching: boolean = false;
 
 	let currentPage = 0;
 	let pageStart = 0;
 	let pageEnd = 10;
-	let workingDataSource: any[] = [...dataSource];
+	$: workingDataSource = [...dataSource];
 	let searchParam: string | number;
 	let isFilterApplied: boolean = false;
 	let isSearchApplied: boolean = false;
@@ -61,7 +62,9 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 	// Function to handle Asynchronous data fetching on parent.
 	function afterUpdateFunctions() {
 		// Total Number Of Pages Calculation
-		totalPages = Math.ceil(workingDataSource.length / pageSettings.pageNumber);
+		if (workingDataSource.length > 0) {
+			totalPages = Math.ceil(workingDataSource.length / pageSettings.pageNumber);
+		}
 		if (!isFilterApplied && !isSearchApplied) {
 			workingDataSource = [...dataSource];
 		}
@@ -153,7 +156,7 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 		pageEnd = 10;
 	}
 
-	function goToPage(page: number): void {
+	export function goToPage(page: number): void {
 		currentPage = pageStart + page;
 	}
 	// Page Navigation Helper Methods Ends Here ***
@@ -257,6 +260,9 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 										{:else}
 											{columnHeader.field}
 										{/if}
+										{#if columnHeader.mandatory}
+											<span class="text-red-500">*</span>
+										{/if}
 										<!-- Filter Logic -->
 										{#if columnHeader.filter && !columnHeader.template}
 											<button
@@ -334,7 +340,9 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 						{:else}
 							<!-- Shows if workingDataSource array is empty -->
 							<tr>
-								<td colspan={columns.length} class="border p-2 text-center">No Data Found</td>
+								<td colspan={columns.length} class="border p-2 text-center"
+									>{isFetching ? 'Loading Data...' : 'No Data Found'}</td
+								>
 							</tr>
 						{/if}
 					</tbody>

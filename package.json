@@ -43,7 +43,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@grampro/svelte-block": "^0.0.13",
+		"@grampro/svelte-block": "^0.0.35",
 		"@internationalized/date": "^3.5.3",
 		"@types/howler": "^2.2.11",
 		"bits-ui": "^0.21.7",
