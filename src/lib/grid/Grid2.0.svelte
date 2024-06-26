@@ -328,7 +328,11 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 										>
 											{#if column.template}
 												<div class="flex">
-													<svelte:component this={column.template} {rowData} {rowIndex} />
+													<svelte:component
+														this={column.template}
+														{rowData}
+														rowIndex={rowIndex + currentPage * pageSettings.pageNumber}
+													/>
 												</div>
 											{:else}
 												{rowData[column.field]}

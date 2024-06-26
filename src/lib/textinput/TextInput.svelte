@@ -32,7 +32,24 @@
 
 {#if !OTPFeild}
 	<div class="text-input-container">
-		<input class={defaultClass} {...$$restProps} bind:value />
+		<input
+			class={defaultClass}
+			{...$$restProps}
+			bind:value
+			on:blur
+			on:change
+			on:click
+			on:contextmenu
+			on:focus
+			on:keydown
+			on:keypress
+			on:keyup
+			on:mouseover
+			on:mouseenter
+			on:mouseleave
+			on:paste
+			on:input
+		/>
 	</div>
 {:else}
 	<div class="otp-container">

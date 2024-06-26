@@ -1,14 +1,15 @@
 <script lang="ts">
-	import { InfoCircleSolid, TrashBinSolid } from 'flowbite-svelte-icons';
+	import Button from './button/Button.svelte';
 
 	export let rowData: any;
+	export let rowIndex: number;
+
+	function addData() {
+		console.log(rowIndex);
+	}
 </script>
 
 <div class="flex gap-2">
-	<button class="p-1 flex items-center rounded-xl" on:click={() => console.log('Edit', rowData)}
-		><InfoCircleSolid color="blue" /></button
-	>
-	<button class="p-1 flex items-center rounded-xl" on:click={() => console.log('Delete', rowData)}
-		><TrashBinSolid color="red" /></button
-	>
+	<Button outline on:click={addData}>Save</Button>
+	<Button outline>Cancel</Button>
 </div>

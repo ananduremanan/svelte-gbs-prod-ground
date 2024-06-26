@@ -1,5 +1,6 @@
 <script>
-	import { Input } from '@grampro/svelte-block';
+	import TextInput from './textinput/TextInput.svelte';
+	export let rowIndex;
 </script>
 
-<Input placeholder="Enter Remarks" />
+<TextInput placeholder="Enter Remarks" id={rowIndex} />
