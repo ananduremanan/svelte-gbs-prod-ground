@@ -55,6 +55,7 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 	let actionMode: string = '';
 	let newEntry: any = {};
 	let isEditModeActive: boolean = false;
+	let selectedRowIndexes: number[] = [];
 
 	let gridClassContainer =
 		'flex flex-col min-w-screen border rounded-md overflow-hidden dark:text-white';
@@ -188,6 +189,8 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 		}
 		newEntry[field] = value;
 	}
+
+	function handleSelect(rowIndex: number, currentPage: number) {}
 </script>
 
 <div class={twMerge(gridContainerClass, gridClassContainer)}>
@@ -325,6 +328,9 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 										<td
 											class={`border-b p-2 text-sm dark:text-white ${column.template ? '' : ''}`}
 											style="width: {column.width ? `${column.width}px` : 'auto'};"
+											on:click={() => {
+												handleSelect(rowIndex, currentPage);
+											}}
 										>
 											{#if column.template}
 												<div class="flex">

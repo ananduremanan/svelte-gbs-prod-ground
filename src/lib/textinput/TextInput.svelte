@@ -67,3 +67,28 @@
 		{/each}
 	</div>
 {/if}
+
+<!--
+## Usage Guide
+@component
+[Go to docs](https://gbs-svelte-bblock.netlify.app/components/BreadCrumb) for more information.
+## Props
+```javascript
+let value: any = '';
+let OTPFeild: boolean = false;
+let OTPValue: string = '';
+let OTPLength: number = 4;
+let OTPClass: string = 'w-8 h-10 m-1 border border-gray-600 rounded-lg text-center';
+```
+
+## Usage
+```svelte
+<script>
+	import { Input } from "@grampro/svelte-block";
+	export let rowIndex;
+	export let rowData;
+</script>
+
+<Input placeholder="Enter Remarks" id={`gbs-${rowIndex}`} bind:value={rowData.remarks} />
+```
+-->
