@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { tick } from 'svelte';
-	import ChevronsUpDown from 'lucide-svelte/icons/chevrons-up-down';
-	import X from 'lucide-svelte/icons/x';
-	import { SearchOutline } from 'flowbite-svelte-icons';
-	import Check from 'lucide-svelte/icons/check';
+	import ChevronsUpDown from '$lib/assets/icons/ChevronsUpDown.svelte';
+	import X from '$lib/assets/icons/X.svelte';
+	import SearchOutline from '$lib/assets/icons/SearchOutline.svelte';
+	import Check from '$lib/assets/icons/Check.svelte';
 	import { twMerge } from 'tailwind-merge';
 	import { fade } from 'svelte/transition';
 
@@ -22,6 +22,7 @@
 	let searchRef: any = null;
 	let fullDataSource = [...items];
 	let selectedDisplay: string = '';
+	let popoverPosition: string = 'bottom';
 
 	// Search handler function
 	function inputSearchHandler(event: any) {
@@ -51,11 +52,20 @@
 		if (showPopover) {
 			await tick();
 			searchRef.focus();
+			setPopoverPosition();
 		}
+	}
+
+	// Function to set popover position
+	function setPopoverPosition() {
+		const rect = popoverTrigger.getBoundingClientRect();
+		const spaceAbove = rect.top;
+		const spaceBelow = window.innerHeight - rect.bottom;
+		popoverPosition = spaceBelow < 200 && spaceAbove > spaceBelow ? 'top' : 'bottom';
 	}
 </script>
 
-<div>
+<div {...$$restProps}>
 	<div class="relative w-[200px]">
 		<button
 			class="flex items-center border px-4 py-2 w-[200px] justify-between rounded-lg font-medium text-sm"
@@ -85,7 +95,10 @@
 	<!-- Item List Popover -->
 	{#if showPopover}
 		<div
-			class={twMerge('absolute overflow-y-auto', popUpClass)}
+			class={twMerge(
+				`absolute overflow-y-auto z-50 ${popoverPosition === 'top' ? 'top-auto bottom-[100%]' : ''}`,
+				popUpClass
+			)}
 			bind:this={popoverTrigger}
 			transition:fade={{ duration: 100 }}
 		>
@@ -102,7 +115,6 @@
 						id="search"
 						placeholder="Search a value"
 						class={twMerge(searchboxClass, 'w-full')}
-						{...$$restProps}
 					/>
 				</div>
 			{/if}
@@ -118,15 +130,70 @@
 							showPopover = !showPopover;
 						}}
 					>
-						<Check class={twMerge('mr-2 h-4 w-4', selected !== value && 'text-transparent')} />
+						<Check
+							class={twMerge('mr-2 h-4 w-4')}
+							color={selected.includes(value) ? 'black' : ''}
+						/>
 						{label}</button
 					>
 				{/each}
 			{:else}
-				<div class="text-sm text-center">No DataSource Found</div>
+				<div class="text-sm text-center">No Data Found</div>
 			{/if}
 		</div>
 	{/if}
 </div>
 
 <svelte:window on:click={handleClickOutside} />
+
+<!--
+## Usage Guide
+@component
+[Go to docs](https://gbs-svelte-bblock.netlify.app/components/Select) for more information.
+## Props
+```javascript
+let placeholder = 'Select a Value...';
+let items: any[];
+let selected: any = '';
+let lazy: boolean = false;
+let showSearch: boolean = true;
+let searchboxClass: string = 'p-1 flex rounded-md bg-transparent text-sm outline-none';
+let popUpClass: string =
+		'w-[200px] h-[200px] border px-2 rounded-lg mt-[1px] scrollbar bg-white z-50';
+let itemClass: string = 'text-left hover:bg-blue-100 gap-2 rounded-lg mt-1 text-sm ';
+```
+
+## Usage
+```svelte
+<script lang="ts">
+	import { countries } from "$lib/countries";
+	import { Select } from "@grampro/svelte-block";
+	let selected = void 0;
+</script>
+
+<div>
+	<Select items={countries} bind:selected={selected} />
+</div>
+```
+-->
+
+<style>
+	.scrollbar::-webkit-scrollbar {
+		margin-top: 20px;
+		width: 5px;
+		height: 10px;
+	}
+
+	.scrollbar::-webkit-scrollbar-track {
+		border-radius: 100vh;
+	}
+
+	.scrollbar::-webkit-scrollbar-thumb {
+		background: #dbeafe;
+		border-radius: 100vh;
+	}
+
+	.scrollbar::-webkit-scrollbar-thumb:hover {
+		background: #c0a0b9;
+	}
+</style>

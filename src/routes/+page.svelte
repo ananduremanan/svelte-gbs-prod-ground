@@ -1,22 +1,24 @@
 <script lang="ts">
-	import Grid2 from '$lib/grid/Grid2.0.svelte';
-	// import { Grid } from '@grampro/svelte-block';
-	import Input from '$lib/Input.svelte';
-	import SerialNumber from '$lib/SerialNumber.svelte';
-	import { dataSource } from '$lib/dataSource';
+	import SelectRestructured from '$lib/dropdown/SelectRestructured.svelte';
+	import MultiSelect from '$lib/multiselect/MultiSelect.svelte';
+	import { items } from '../utils/componentData';
 
-	const columns = [
-		{ field: 'Sl. No', width: '80', textAlign: 'Right', template: SerialNumber },
-		{ field: 'OrderID', width: '100', textAlign: 'Right' },
-		{ field: 'CustomerID', width: '100' },
-		{ field: 'EmployeeID', width: '100', textAlign: 'Right' },
-		{ field: 'Freight', headerText: 'Frieght', width: '100' },
-		{ field: 'ShipCountry', width: '100' },
-		{ field: 'ShipAddress', width: '150' },
-		{ field: 'Remarks', headerText: 'Remarks', template: Input, width: '200' }
+	let countries = [
+		{ value: 'us', label: 'United States' },
+		{ value: 'fr', label: 'France' },
+		{ value: 'gb', label: 'United Kingdom' },
+		{ value: 'de', label: 'Germany' },
+		{ value: 'jp', label: 'Japan' },
+		{ value: 'au', label: 'Australia' },
+		{ value: 'cn', label: 'China' },
+		{ value: 'in', label: 'India' },
+		{ value: 'mx', label: 'Mexico' }
 	];
+
+	let selected: any;
 </script>
 
-<div class="m-4">
-	<Grid2 {columns} {dataSource} pageSettings={{ pageNumber: 10 }} enableEditingBox enableSearch />
+<div class="min-h-screen relative">
+	<MultiSelect items={countries} bind:selected />
+	<SelectRestructured items={countries} bind:selected />
 </div>
