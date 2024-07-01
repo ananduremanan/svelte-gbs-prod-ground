@@ -165,10 +165,12 @@
 						<input
 							type="checkbox"
 							id="selectall"
-							value={selectAllChecked}
+							checked={selectAllChecked}
 							on:change={handleSelectAll}
 						/>
-						<label for="selectall" class="ml-3">Select All</label>
+						<label for="selectall" class="ml-3"
+							>{selectAllChecked ? 'Unselect All' : 'Select All'}</label
+						>
 					</div>
 				{/if}
 				{#each items as { value, label }}
