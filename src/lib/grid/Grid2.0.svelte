@@ -56,7 +56,6 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 	let actionMode: string = '';
 	let newEntry: any = {};
 	let isEditModeActive: boolean = false;
-	let selectedRowIndexes: number[] = [];
 
 	let gridClassContainer =
 		'flex flex-col min-w-screen border rounded-md overflow-hidden dark:text-white';
@@ -191,7 +190,13 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 		newEntry[field] = value;
 	}
 
-	function handleSelect(rowIndex: number, currentPage: number) {}
+	export function excelExport() {
+		exportToExcelHelper(workingDataSource, columns, excelName);
+	}
+
+	export function pdfExport() {
+		exportToPDFHelper(workingDataSource, columns, pdfName, pdfOptions);
+	}
 </script>
 
 <div class={twMerge(gridContainerClass, gridClassContainer)}>
@@ -211,17 +216,10 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 					>
 						<div class={twMerge('flex justify-end gap-2', gridHeaderClass)}>
 							{#if enableExcelExport}
-								<button
-									on:click={() => exportToExcelHelper(workingDataSource, columns, excelName)}
-									class={gridButtonClass}>Export as Excel</button
-								>
+								<button on:click={excelExport} class={gridButtonClass}>Export as Excel</button>
 							{/if}
 							{#if enablePdfExport}
-								<button
-									on:click={() =>
-										exportToPDFHelper(workingDataSource, columns, pdfName, pdfOptions)}
-									class={gridButtonClass}>Export as PDF</button
-								>
+								<button on:click={pdfExport} class={gridButtonClass}>Export as PDF</button>
 							{/if}
 							{#if enableSearch}
 								<div class="flex gap-1">
@@ -331,9 +329,6 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 										<td
 											class={`border-b p-2 text-sm dark:text-white ${column.template ? '' : ''}`}
 											style="width: {column.width ? `${column.width}px` : 'auto'};"
-											on:click={() => {
-												handleSelect(rowIndex, currentPage);
-											}}
 										>
 											{#if column.template}
 												<div class="flex">

@@ -1,5 +1,14 @@
 <script lang="ts">
-	import { UploadOutline } from 'flowbite-svelte-icons';
+	import {
+		UploadOutline,
+		FileOutline,
+		FilePdfOutline,
+		FileChartBarOutline,
+		FileWordOutline,
+		FileMusicOutline,
+		FileVideoOutline,
+		CloseCircleOutline
+	} from 'flowbite-svelte-icons';
 
 	export let placeHolder = 'Select Files to Upload';
 	export let uploaderClass =
@@ -11,34 +20,56 @@
 	export let selectedFiles: FileList | null = null;
 
 	let filePreviews: any[] = [];
+	let fileInput: any;
 
-	function updateLabel(event: any) {
-		const input = event.target;
-		const label = input.previousElementSibling.querySelector('p');
+	function getFileIcon(fileType: string) {
+		if (fileType.startsWith('image/')) return null;
+		if (fileType === 'application/pdf') return FilePdfOutline;
+		if (
+			fileType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+			fileType === 'application/vnd.ms-excel'
+		)
+			return FileChartBarOutline;
+		if (
+			fileType === 'application/msword' ||
+			fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+		)
+			return FileWordOutline;
+		if (fileType.startsWith('audio/')) return FileMusicOutline;
+		if (fileType.startsWith('video/')) return FileVideoOutline;
+		return FileOutline;
+	}
 
-		if (input.files && input.files.length > 0) {
-			selectedFiles = input.files;
-			const fileNames = Array.from(input.files)
+	function updateLabel() {
+		if (fileInput.files && fileInput.files.length > 0) {
+			selectedFiles = fileInput.files;
+			const fileNames = Array.from(fileInput.files)
 				.map((file: any) => file.name)
 				.join(', ');
-			label.textContent = fileNames;
+			placeHolder = fileNames;
 
-			filePreviews = [];
-			Array.from(input.files).forEach((file: any) => {
-				if (file.type.startsWith('image/')) {
-					const reader = new FileReader();
-					reader.onload = (e: any) => {
-						filePreviews = [...filePreviews, { name: file.name, url: e.target.result }];
-					};
-					reader.readAsDataURL(file);
-				} else {
-					filePreviews = [...filePreviews, { name: file.name, url: null }];
-				}
-			});
+			filePreviews = Array.from(fileInput.files).map((file: any) => ({
+				name: file.name,
+				url: file.type.startsWith('image/') ? URL.createObjectURL(file) : null,
+				type: file.type
+			}));
 		} else {
-			label.textContent = placeHolder;
+			placeHolder = 'Select Files to Upload';
 			filePreviews = [];
 		}
+	}
+
+	function removeFile(index: number) {
+		filePreviews = filePreviews.filter((_, i) => i !== index);
+
+		const dt = new DataTransfer();
+		Array.from(fileInput.files).forEach((file: any, i) => {
+			if (i !== index) dt.items.add(file);
+		});
+		fileInput.files = dt.files;
+		selectedFiles = fileInput.files;
+
+		updateLabel();
 	}
 </script>
 
@@ -48,18 +79,36 @@
 			<UploadOutline color={iconColor} />
 			<p class={placeholderClass}>{placeHolder}</p>
 		</div>
-		<input type="file" class="hidden" multiple on:change={updateLabel} {...$$restProps} />
+		<input
+			bind:this={fileInput}
+			type="file"
+			class="hidden"
+			multiple
+			on:change={updateLabel}
+			{...$$restProps}
+		/>
 	</label>
 
 	{#if showPreview && filePreviews.length > 0}
-		<div class="flex gap-2 max-h-20 border border-dotted p-2 rounded-lg">
-			{#each filePreviews as { name, url }}
-				<div class="flex items-center justify-center">
+		<div
+			class="flex flex-wrap gap-2 max-h-40 overflow-y-auto border border-dotted p-2 rounded-lg px-4"
+		>
+			{#each filePreviews as { name, url, type }, index}
+				<div
+					class="relative w-16 h-16 flex flex-col items-center justify-center overflow-hidden group"
+				>
 					{#if url}
-						<img src={url} alt={name} class="max-w-full max-h-full rounded-lg shadow-md" />
+						<img src={url} alt={name} class="w-full h-full object-cover rounded-lg shadow-md" />
 					{:else}
-						<p class="text-sm text-gray-500">{name} (Preview not available)</p>
+						<svelte:component this={getFileIcon(type)} size="32" color={iconColor} />
+						<p class="text-xs text-gray-500 text-center mt-1 truncate w-full">{name}</p>
 					{/if}
+					<button
+						class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+						on:click={() => removeFile(index)}
+					>
+						<CloseCircleOutline size="sm" />
+					</button>
 				</div>
 			{/each}
 		</div>
