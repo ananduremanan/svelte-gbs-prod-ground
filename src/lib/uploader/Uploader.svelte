@@ -1,14 +1,10 @@
 <script lang="ts">
+	import { UploadOutline, CloseCircleOutline } from 'flowbite-svelte-icons';
 	import {
-		UploadOutline,
-		FileOutline,
-		FilePdfOutline,
-		FileChartBarOutline,
-		FileWordOutline,
-		FileMusicOutline,
-		FileVideoOutline,
-		CloseCircleOutline
-	} from 'flowbite-svelte-icons';
+		getFileIconHelper,
+		updateLabelHelper,
+		removeFileHelper
+	} from './uploaderHelperFunctions';
 
 	export let placeHolder = 'Select Files to Upload';
 	export let uploaderClass =
@@ -20,55 +16,25 @@
 	export let selectedFiles: FileList | null = null;
 
 	let filePreviews: any[] = [];
-	let fileInput: any;
-
-	function getFileIcon(fileType: string) {
-		if (fileType.startsWith('image/')) return null;
-		if (fileType === 'application/pdf') return FilePdfOutline;
-		if (
-			fileType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
-			fileType === 'application/vnd.ms-excel'
-		)
-			return FileChartBarOutline;
-		if (
-			fileType === 'application/msword' ||
-			fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-		)
-			return FileWordOutline;
-		if (fileType.startsWith('audio/')) return FileMusicOutline;
-		if (fileType.startsWith('video/')) return FileVideoOutline;
-		return FileOutline;
-	}
+	let fileInput: HTMLInputElement;
 
 	function updateLabel() {
-		if (fileInput.files && fileInput.files.length > 0) {
-			selectedFiles = fileInput.files;
-			const fileNames = Array.from(fileInput.files)
-				.map((file: any) => file.name)
-				.join(', ');
-			placeHolder = fileNames;
+		const { updatedPlaceHolder, updatedSelectedFiles, updatedFilePreviews } =
+			updateLabelHelper(fileInput);
 
-			filePreviews = Array.from(fileInput.files).map((file: any) => ({
-				name: file.name,
-				url: file.type.startsWith('image/') ? URL.createObjectURL(file) : null,
-				type: file.type
-			}));
-		} else {
-			placeHolder = 'Select Files to Upload';
-			filePreviews = [];
-		}
+		placeHolder = updatedPlaceHolder;
+		selectedFiles = updatedSelectedFiles;
+		filePreviews = updatedFilePreviews;
 	}
 
 	function removeFile(index: number) {
-		filePreviews = filePreviews.filter((_, i) => i !== index);
-
-		const dt = new DataTransfer();
-		Array.from(fileInput.files).forEach((file: any, i) => {
-			if (i !== index) dt.items.add(file);
-		});
-		fileInput.files = dt.files;
-		selectedFiles = fileInput.files;
-
+		const { updatedFilePreviews, updatedSelectedFiles } = removeFileHelper(
+			index,
+			filePreviews,
+			fileInput
+		);
+		filePreviews = updatedFilePreviews;
+		selectedFiles = updatedSelectedFiles;
 		updateLabel();
 	}
 </script>
@@ -95,12 +61,12 @@
 		>
 			{#each filePreviews as { name, url, type }, index}
 				<div
-					class="relative w-16 h-16 flex flex-col items-center justify-center overflow-hidden group"
+					class="relative w-16 h-16 flex flex-col items-center justify-center overflow-hidden group cursor-pointer"
 				>
 					{#if url}
 						<img src={url} alt={name} class="w-full h-full object-cover rounded-lg shadow-md" />
 					{:else}
-						<svelte:component this={getFileIcon(type)} size="32" color={iconColor} />
+						<svelte:component this={getFileIconHelper(type)} size="32" color={iconColor} />
 						<p class="text-xs text-gray-500 text-center mt-1 truncate w-full">{name}</p>
 					{/if}
 					<button
