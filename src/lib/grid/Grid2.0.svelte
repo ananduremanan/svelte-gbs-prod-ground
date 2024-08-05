@@ -13,7 +13,8 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 		handleApplyFilterHelper,
 		clearFilterHelper,
 		exportToExcelHelper,
-		exportToPDFHelper
+		exportToPDFHelper,
+		handleEditActionHelper
 	} from './GridHelperFunctions';
 	import { onMount, afterUpdate } from 'svelte';
 	import { twMerge } from 'tailwind-merge';
@@ -34,29 +35,37 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 	export let enablePdfExport: boolean = false;
 	export let pdfName: string = 'data';
 	export let gridContainerClass: string = '';
-	export let gridButtonClass: string = 'px-1 py-2 bg-white border rounded-lg text-xs text-black';
+	export let gridButtonClass: string =
+		'px-1 py-2 bg-white border rounded-lg text-xs text-black dark:bg-black dark:text-white';
 	export let gridHeaderClass: string = '';
 	export let gridGlobalSearchButtonClass: string = '';
 	export let gridPaginationButtonClass: string = '';
 	export let pdfOptions: any = {};
 	export let enableEditingBox: boolean = false;
+	export let isFetching: boolean = false;
 
 	let currentPage = 0;
 	let pageStart = 0;
 	let pageEnd = 10;
-	let workingDataSource: any[] = [...dataSource];
+	$: workingDataSource = [...dataSource];
 	let searchParam: string | number;
 	let isFilterApplied: boolean = false;
 	let isSearchApplied: boolean = false;
 	let totalPages = 0;
+	let selectedRowIndex: any;
+	let actionMode: string = '';
+	let newEntry: any = {};
+	let isEditModeActive: boolean = false;
+
 	let gridClassContainer =
 		'flex flex-col min-w-screen border rounded-md overflow-hidden dark:text-white';
-	let selectedRowIndex: any;
 
 	// Function to handle Asynchronous data fetching on parent.
 	function afterUpdateFunctions() {
 		// Total Number Of Pages Calculation
-		totalPages = Math.ceil(workingDataSource.length / pageSettings.pageNumber);
+		if (workingDataSource.length > 0) {
+			totalPages = Math.ceil(workingDataSource.length / pageSettings.pageNumber);
+		}
 		if (!isFilterApplied && !isSearchApplied) {
 			workingDataSource = [...dataSource];
 		}
@@ -148,10 +157,46 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 		pageEnd = 10;
 	}
 
-	function goToPage(page: number): void {
+	export function goToPage(page: number): void {
 		currentPage = pageStart + page;
 	}
 	// Page Navigation Helper Methods Ends Here ***
+
+	// Grid Edit Action Handler Functions
+	function handleEditAction(event: any) {
+		const { dataSourceUpdate, isEditModeActiveUpdate, actionModeUpdate, newEntryUpdate } =
+			handleEditActionHelper(
+				event,
+				isEditModeActive,
+				actionMode,
+				newEntry,
+				workingDataSource,
+				goToFirstPage
+			);
+
+		dataSource = dataSourceUpdate;
+		isEditModeActive = isEditModeActiveUpdate;
+		actionMode = actionModeUpdate;
+		newEntry = newEntryUpdate;
+	}
+
+	function handleInputChange(event: any, field: any, type: string) {
+		let value = event.target.value;
+		if (type === 'number') {
+			value = parseInt(value);
+		} else if (type === 'boolean') {
+			value = event.target.checked;
+		}
+		newEntry[field] = value;
+	}
+
+	export function excelExport() {
+		exportToExcelHelper(workingDataSource, columns, excelName);
+	}
+
+	export function pdfExport() {
+		exportToPDFHelper(workingDataSource, columns, pdfName, pdfOptions);
+	}
 </script>
 
 <div class={twMerge(gridContainerClass, gridClassContainer)}>
@@ -160,6 +205,10 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 			<!-- Grid Header Options -->
 			{#if enableSearch || enableExcelExport || enablePdfExport || enableEditingBox}
 				<div class="min-w-full flex justify-between items-center">
+					<!-- Grid Editing Tool Box -->
+					{#if enableEditingBox}
+						<EditingToolbar on:edit={handleEditAction} {isEditModeActive} />
+					{/if}
 					<!-- Utility Tools -->
 					<div
 						class="px-1 py-3 flex-grow"
@@ -167,17 +216,10 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 					>
 						<div class={twMerge('flex justify-end gap-2', gridHeaderClass)}>
 							{#if enableExcelExport}
-								<button
-									on:click={() => exportToExcelHelper(workingDataSource, columns, excelName)}
-									class={gridButtonClass}>Export as Excel</button
-								>
+								<button on:click={excelExport} class={gridButtonClass}>Export as Excel</button>
 							{/if}
 							{#if enablePdfExport}
-								<button
-									on:click={() =>
-										exportToPDFHelper(workingDataSource, columns, pdfName, pdfOptions)}
-									class={gridButtonClass}>Export as PDF</button
-								>
+								<button on:click={pdfExport} class={gridButtonClass}>Export as PDF</button>
 							{/if}
 							{#if enableSearch}
 								<div class="flex gap-1">
@@ -185,17 +227,17 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 										type="search"
 										bind:value={searchParam}
 										on:input={resetSearch}
-										class="outline-none p-2 text-sm font-normal bg-gray-50 rounded-lg max-sm:hidden"
+										class="outline-none p-2 text-sm font-normal bg-gray-50 rounded-lg max-sm:hidden dark:bg-gray-700"
 										placeholder="Search"
 									/>
 									<button
 										class={twMerge(
-											'bg-white border rounded-lg text-black w-10 flex items-center justify-center',
+											'bg-white border rounded-lg text-black w-10 flex items-center justify-center dark:bg-black',
 											gridGlobalSearchButtonClass
 										)}
 										on:click={() => {
 											handleSearch(searchParam);
-										}}><SearchOutline /></button
+										}}><SearchOutline class="dark:text-white" /></button
 									>
 								</div>
 							{/if}
@@ -211,7 +253,7 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 						<tr>
 							{#each columns as columnHeader}
 								<th
-									class="border-b border-t bg-gray-50 px-2 py-4"
+									class="border-b border-t bg-gray-50 px-2 py-4 dark:bg-gray-700"
 									style="width: {columnHeader.width ? `${columnHeader.width}px` : 'auto'};"
 								>
 									<div class="flex items-center gap-2 text-sm">
@@ -219,6 +261,9 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 											{columnHeader.headerText}
 										{:else}
 											{columnHeader.field}
+										{/if}
+										{#if columnHeader.mandatory}
+											<span class="text-red-500">*</span>
 										{/if}
 										<!-- Filter Logic -->
 										{#if columnHeader.filter && !columnHeader.template}
@@ -247,20 +292,51 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 								</th>
 							{/each}
 						</tr>
+
+						{#if actionMode === 'add'}
+							<tr>
+								{#each columns as columnHeader}
+									<td class="border-b px-2 py-2">
+										{#if columnHeader.type === 'boolean'}
+											<input
+												type="checkbox"
+												class="border p-1"
+												on:change={(event) =>
+													handleInputChange(event, columnHeader.field, columnHeader.type)}
+											/>
+										{:else}
+											<input
+												class="border p-1 w-full rounded-lg outline-none"
+												on:input={(event) =>
+													handleInputChange(event, columnHeader.field, columnHeader.type)}
+												placeholder={`Enter ${columnHeader.field}`}
+												type={columnHeader.type ? columnHeader.type : 'text'}
+											/>
+										{/if}
+									</td>
+								{/each}
+							</tr>
+						{/if}
 					</thead>
 					<tbody>
 						<!-- Data From Datsource Shows Here -->
 						{#if workingDataSource.length > 0}
 							{#each workingDataSource.slice(currentPage * pageSettings.pageNumber, (currentPage + 1) * pageSettings.pageNumber) as rowData, rowIndex}
-								<tr class={`hover:bg-gray-50 ${selectedRowIndex === rowIndex ? 'bg-gray-50' : ''}`}>
+								<tr
+									class={`hover:bg-gray-50 dark:hover:bg-gray-900 ${selectedRowIndex === rowIndex ? 'bg-gray-50' : ''}`}
+								>
 									{#each columns as column}
 										<td
-											class={`border-b p-2 text-sm ${column.template ? '' : ''}`}
+											class={`border-b p-2 text-sm dark:text-white ${column.template ? '' : ''}`}
 											style="width: {column.width ? `${column.width}px` : 'auto'};"
 										>
 											{#if column.template}
 												<div class="flex">
-													<svelte:component this={column.template} {rowData} />
+													<svelte:component
+														this={column.template}
+														{rowData}
+														rowIndex={rowIndex + currentPage * pageSettings.pageNumber}
+													/>
 												</div>
 											{:else}
 												{rowData[column.field]}
@@ -272,22 +348,26 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 						{:else}
 							<!-- Shows if workingDataSource array is empty -->
 							<tr>
-								<td colspan={columns.length} class="border p-2 text-center">No Data Found</td>
+								<td colspan={columns.length} class="border p-2 text-center"
+									>{isFetching ? 'Loading Data...' : 'No Data Found'}</td
+								>
 							</tr>
 						{/if}
 					</tbody>
 				</table>
 			</div>
 			<!-- Pagination Logic -->
-			<div class="flex p-2 justify-between">
+			<div class="flex p-2 justify-between dark:text-white">
 				<div class="flex gap-4">
 					<button class="-mr-2" on:click={goToFirstPage}
 						><ChevronDoubleLeftOutline
-							class={`${currentPage === 0 ? 'text-gray-200' : ''}`}
+							class={`${currentPage === 0 ? 'text-gray-200 dark:text-gray-700' : ''}`}
 						/></button
 					>
 					<button on:click={prevPage}
-						><AngleLeftOutline class={`${currentPage === 0 ? 'text-gray-200' : ''}`} /></button
+						><AngleLeftOutline
+							class={`${currentPage === 0 ? 'text-gray-200 dark:text-gray-700' : ''}`}
+						/></button
 					>
 					<div class="flex flex-row gap-3 items-center">
 						{#if pageStart > 0}
@@ -303,7 +383,7 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 						{#each Array(Math.min(10, Math.ceil(workingDataSource.length / pageSettings.pageNumber) - pageStart)) as _, i}
 							<button
 								on:click={() => goToPage(i)}
-								class={`${pageStart + i === currentPage ? twMerge('font-bold text-white p-2 h-6 bg-blue-500 flex items-center justify-center rounded-full w-auto', gridPaginationButtonClass) : ''}`}
+								class={`${pageStart + i === currentPage ? twMerge('font-bold text-white p-2 h-6 bg-black flex items-center justify-center rounded-md w-auto dark:bg-white dark:text-black', gridPaginationButtonClass) : ''}`}
 								>{pageStart + i + 1}</button
 							>
 						{/each}
@@ -320,12 +400,12 @@ https://psychedelic-step-e70.notion.site/Svelte-GBS-Component-Library-20ff97c899
 					</div>
 					<button on:click={nextPage}
 						><AngleRightOutline
-							class={`${currentPage === totalPages - 1 ? 'text-gray-200' : ''}`}
+							class={`${currentPage === totalPages - 1 ? 'text-gray-200 dark:text-gray-700' : ''}`}
 						/></button
 					>
 					<button class="-ml-2" on:click={goToEndPage}
 						><ChevronDoubleRightOutline
-							class={`${currentPage === totalPages - 1 ? 'text-gray-200' : ''}`}
+							class={`${currentPage === totalPages - 1 ? 'text-gray-200 dark:text-gray-700' : ''}`}
 						/></button
 					>
 				</div>

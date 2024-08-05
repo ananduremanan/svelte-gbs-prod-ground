@@ -1,18 +1,39 @@
 <script lang="ts">
-	export let type: string = 'text';
-	export let placeholder: string = 'Type Something';
-	export let pattern: string = '';
-	export let id: string = '';
 	export let value: any = '';
 	export let OTPFeild: boolean = false;
 	export let OTPValue: string = '';
 	export let OTPLength: number = 4;
 	export let OTPClass: string = 'w-8 h-10 m-1 border border-gray-600 rounded-lg text-center';
+	export let type:
+		| 'color'
+		| 'date'
+		| 'datetime-local'
+		| 'email'
+		| 'file'
+		| 'hidden'
+		| 'image'
+		| 'month'
+		| 'number'
+		| 'password'
+		| 'reset'
+		| 'submit'
+		| 'tel'
+		| 'text'
+		| 'time'
+		| 'url'
+		| 'week'
+		| 'search' = 'text';
 
 	let defaultClass = 'bg-gray-100 p-2 rounded-lg';
 
 	let otpValues: string[] = new Array(OTPLength).fill('');
 	let inputRefs: HTMLInputElement[] = [];
+
+	// Two binding in svelte won't support dynamic types,
+	// so, we need to explicitly parse number values
+	$: if (type === 'number' && typeof value === 'string') {
+		value = value ? parseFloat(value) : undefined;
+	}
 
 	// Function to update the OTP values and focus the next field
 	function updateOtpValue(index: number, e: Event) {
@@ -36,13 +57,30 @@
 
 {#if !OTPFeild}
 	<div class="text-input-container">
-		<input {id} {type} {placeholder} class={defaultClass} {...$$restProps} {pattern} {value} />
+		<input
+			class={defaultClass}
+			{...$$restProps}
+			{...{ type }}
+			bind:value
+			on:blur
+			on:change
+			on:click
+			on:contextmenu
+			on:focus
+			on:keydown
+			on:keypress
+			on:keyup
+			on:mouseover
+			on:mouseenter
+			on:mouseleave
+			on:paste
+			on:input
+		/>
 	</div>
 {:else}
 	<div class="otp-container">
 		{#each Array(OTPLength) as _, index (index)}
 			<input
-				{id}
 				type="text"
 				maxlength="1"
 				pattern="[0-9]*"
@@ -55,3 +93,28 @@
 		{/each}
 	</div>
 {/if}
+
+<!--
+## Usage Guide
+@component
+[Go to docs](https://gbs-svelte-bblock.netlify.app/components/BreadCrumb) for more information.
+## Props
+```javascript
+let value: any = '';
+let OTPFeild: boolean = false;
+let OTPValue: string = '';
+let OTPLength: number = 4;
+let OTPClass: string = 'w-8 h-10 m-1 border border-gray-600 rounded-lg text-center';
+```
+
+## Usage
+```svelte
+<script>
+	import { Input } from "@grampro/svelte-block";
+	export let rowIndex;
+	export let rowData;
+</script>
+
+<Input placeholder="Enter Remarks" id={`gbs-${rowIndex}`} bind:value={rowData.remarks} />
+```
+-->

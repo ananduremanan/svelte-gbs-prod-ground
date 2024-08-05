@@ -7,6 +7,7 @@
 
 	export let type = 'error';
 	export let dismissible = false;
+	export let toastClassInner;
 
 	let textColor = 'bg-red-500';
 
@@ -18,18 +19,17 @@
 			case 'info':
 				textColor = 'text-blue-500';
 				break;
-			default:
+			case 'error':
 				textColor = 'text-red-500';
+				break;
+			default:
+				textColor = '';
 				break;
 		}
 	}
 </script>
 
-<article
-	class={`bg-white px-2 py-2 rounded-2xl text-sm flex justify-between w-40 md:w-80 m-2 border shadow-lg ${textColor}`}
-	role="alert"
-	transition:fade
->
+<article class={`${toastClassInner} ${textColor}`} role="alert" transition:fade>
 	<div class="flex gap-2 items-center justify-center">
 		{#if type === 'success'}
 			<CircleCheck size="20" />

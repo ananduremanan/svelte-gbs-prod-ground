@@ -1,6 +1,9 @@
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
+import pkg from 'file-saver';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+
+const { saveAs } = pkg;
 
 let activeFilterArray: Object[] = [];
 
@@ -87,7 +90,7 @@ export function clearFilterHelper(event: any, columns: any[], dataSource: any[])
 	return { columns, workingDataSource, hasActiveFilters };
 }
 
-export function exportToExcelHelper(dataSource: any[], columns: any[], excelName: string) {
+export async function exportToExcelHelper(dataSource: any[], columns: any[], excelName: string) {
 	// This will remove the column template.
 	const templateRemovedColumn = columns.filter((column) => !column.template);
 	const dataToExport = dataSource.map((row) => {
@@ -97,10 +100,23 @@ export function exportToExcelHelper(dataSource: any[], columns: any[], excelName
 		});
 		return rowData;
 	});
-	const ws = XLSX.utils.json_to_sheet(dataToExport);
-	const wb = XLSX.utils.book_new();
-	XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-	XLSX.writeFile(wb, `${excelName}.xlsx`);
+
+	const workbook = new ExcelJS.Workbook();
+	const worksheet = workbook.addWorksheet('Sheet1');
+
+	worksheet.columns = templateRemovedColumn.map((column: any) => ({
+		header: column.headerText || column.field,
+		key: column.field,
+		width: parseInt(column.width) / 10 || 20
+	}));
+
+	dataToExport.forEach((rowData) => {
+		worksheet.addRow(rowData);
+	});
+
+	const buffer = await workbook.xlsx.writeBuffer();
+	const blob = new Blob([buffer], { type: 'application/octet-stream' });
+	saveAs(blob, `${excelName}.xlsx`);
 }
 
 export function exportToPDFHelper(
@@ -134,4 +150,51 @@ export function exportToPDFHelper(
 	});
 
 	doc.save(`${pdfName}.pdf`);
+}
+
+export function handleEditActionHelper(
+	e: any,
+	isEditModeActive: boolean,
+	actionMode: string,
+	newEntry: any,
+	workingDataSource: any[],
+	goToFirstPage: () => void
+) {
+	const { mode } = e.detail;
+	let dataSourceUpdate = [...workingDataSource];
+	let isEditModeActiveUpdate: boolean = isEditModeActive;
+	let actionModeUpdate: string = actionMode;
+	let newEntryUpdate: any = { ...newEntry };
+
+	function resetEditMode() {
+		isEditModeActiveUpdate = false;
+		actionModeUpdate = '';
+		newEntryUpdate = {};
+	}
+
+	function addNewEntry() {
+		if (Object.keys(newEntryUpdate).length > 0) {
+			dataSourceUpdate = [newEntryUpdate, ...workingDataSource];
+			newEntryUpdate = {};
+		}
+	}
+
+	switch (mode) {
+		case 'add':
+			isEditModeActiveUpdate = true;
+			actionModeUpdate = mode;
+			goToFirstPage();
+			break;
+		case 'cancel':
+			resetEditMode();
+			break;
+		case 'update':
+			addNewEntry();
+			resetEditMode();
+			break;
+		default:
+			break;
+	}
+
+	return { dataSourceUpdate, isEditModeActiveUpdate, actionModeUpdate, newEntryUpdate };
 }

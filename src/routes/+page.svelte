@@ -1,28 +1,33 @@
-<script>
-	import Grid from '$lib/grid/Grid2.0.svelte';
-	import { dataSource } from '$lib/dataSource';
+<script lang="ts">
+	import { countries } from '$lib';
+	import Button from '$lib/button/Button.svelte';
+	import SelectRestructured from '$lib/dropdown/SelectRestructured.svelte';
+	import Modal from '$lib/modal/Modal.svelte';
+	import TextInput from '$lib/textinput/TextInput.svelte';
 
-	const columns = [
-		{ field: 'OrderID', textAlign: 'Right' },
-		{ field: 'ShipCountry', editable: true },
-		{ field: 'ShipAddress' },
-		{ field: 'ShipName' },
-		{ field: 'ShipCity' },
-		{ field: 'ShipRegion' },
-		{ field: 'ShipPostalCode' },
-		{ field: 'OrderDate' },
-		{ field: 'Verified' }
-	];
+	let showModal: boolean = false;
+	let formData = {
+		name: undefined,
+		country: undefined
+	};
+
+	function handleSubmit() {
+		console.log('formData', formData);
+	}
 </script>
 
-<div class="mx-8 mt-8 max-sm:mx-4">
-	<Grid
-		{columns}
-		{dataSource}
-		pageSettings={{ pageNumber: 10 }}
-		pdfOptions={{ layout: 'portrait', paperSize: 'a3' }}
-		enableSearch
-		enablePdfExport
-		enableExcelExport
-	/>
-</div>
+<Modal {showModal}>
+	<form action="" on:submit|preventDefault={handleSubmit}>
+		<TextInput type="text" placeholder="Enter Name" bind:value={formData.name} />
+		<SelectRestructured items={countries} bind:selected={formData.country} />
+		<Button type="submit">Submit</Button>
+	</form>
+</Modal>
+
+<section class="min-h-screen flex items-center justify-center">
+	<Button
+		on:click={() => {
+			showModal = !showModal;
+		}}>Show Modal</Button
+	>
+</section>
