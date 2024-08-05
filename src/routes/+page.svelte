@@ -1,40 +1,33 @@
 <script lang="ts">
-	import Uploader from '$lib/uploader/Uploader.svelte';
+	import { countries } from '$lib';
 	import Button from '$lib/button/Button.svelte';
-	import { uploadFileInChunks } from '$lib';
-	import Spinner from '$lib/loading/Spinner.svelte';
+	import SelectRestructured from '$lib/dropdown/SelectRestructured.svelte';
+	import Modal from '$lib/modal/Modal.svelte';
+	import TextInput from '$lib/textinput/TextInput.svelte';
 
-	let selectedFiles: any;
-	let uploadProgress: boolean = false;
+	let showModal: boolean = false;
+	let formData = {
+		name: undefined,
+		country: undefined
+	};
 
-	async function uploadHandler() {
-		for (let file of selectedFiles) {
-			try {
-				uploadProgress = true;
-				await uploadFileInChunks(file, 'http://127.0.0.1:3000/upload');
-			} catch (error) {
-				console.error(error);
-			} finally {
-				uploadProgress = false;
-			}
-		}
+	function handleSubmit() {
+		console.log('formData', formData);
 	}
 </script>
 
-<div class="min-h-screen flex flex-col justify-center items-center">
-	<Uploader multiple showPreview bind:selectedFiles />
-	{#if selectedFiles && selectedFiles.length > 0}
-		<Button
-			class={`mt-4 ${uploadProgress ? 'bg-gray-100' : 'bg-blue-400'}`}
-			on:click={uploadHandler}
-			disabled={uploadProgress}
-			>{#if uploadProgress}
-				<span class="text-black flex gap-2 justify-center items-center"
-					><Spinner size="h-6 w-6" type="stroke" />Uploading Please Wait...</span
-				>
-			{:else}
-				<span>Upload Files</span>
-			{/if}</Button
-		>
-	{/if}
-</div>
+<Modal {showModal}>
+	<form action="" on:submit|preventDefault={handleSubmit}>
+		<TextInput type="text" placeholder="Enter Name" bind:value={formData.name} />
+		<SelectRestructured items={countries} bind:selected={formData.country} />
+		<Button type="submit">Submit</Button>
+	</form>
+</Modal>
+
+<section class="min-h-screen flex items-center justify-center">
+	<Button
+		on:click={() => {
+			showModal = !showModal;
+		}}>Show Modal</Button
+	>
+</section>

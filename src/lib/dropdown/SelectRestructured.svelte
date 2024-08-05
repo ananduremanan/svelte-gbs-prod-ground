@@ -9,7 +9,7 @@
 
 	export let placeholder = 'Select a Value...';
 	export let items: any[];
-	export let selected: any = '';
+	export let selected: any = undefined;
 	export let lazy: boolean = false;
 	export let showSearch: boolean = true;
 	export let searchboxClass: string = 'p-1 flex rounded-md bg-transparent text-sm outline-none';
@@ -46,7 +46,8 @@
 	}
 
 	// Function to toggle popover
-	async function togglePopover() {
+	async function togglePopover(event: MouseEvent) {
+		event.stopPropagation();
 		showPopover = !showPopover;
 		items = fullDataSource;
 		if (showPopover) {
@@ -58,14 +59,16 @@
 
 	// Function to set popover position
 	function setPopoverPosition() {
-		const rect = popoverTrigger.getBoundingClientRect();
-		const spaceAbove = rect.top;
-		const spaceBelow = window.innerHeight - rect.bottom;
-		popoverPosition = spaceBelow < 200 && spaceAbove > spaceBelow ? 'top' : 'bottom';
+		if (popoverTrigger) {
+			const rect = popoverTrigger.getBoundingClientRect();
+			const spaceAbove = rect.top;
+			const spaceBelow = window.innerHeight - rect.bottom;
+			popoverPosition = spaceBelow < 200 && spaceAbove > spaceBelow ? 'top' : 'bottom';
+		}
 	}
 </script>
 
-<div {...$$restProps}>
+<div {...$$restProps} class="relative">
 	<div class="relative w-[200px]">
 		<button
 			class="flex items-center border px-4 py-2 w-[200px] justify-between rounded-lg font-medium text-sm"
@@ -83,7 +86,7 @@
 			<button
 				class="absolute right-8 top-0 h-full flex items-center px-2 z-20"
 				on:click={() => {
-					selected = '';
+					selected = undefined;
 					selectedDisplay = '';
 				}}
 			>
@@ -132,7 +135,7 @@
 					>
 						<Check
 							class={twMerge('mr-2 h-4 w-4')}
-							color={selected.includes(value) ? 'black' : ''}
+							color={selected && selected.includes(value) ? 'black' : ''}
 						/>
 						{label}</button
 					>
